@@ -25,16 +25,20 @@ End_Pos.dx = cadaoutput2_1.dx; End_Pos.f = cadaoutput2_1.f;
 %User Line: End_Pos = cadaoutput2_1;
 End_Vel.dx = cadaoutput2_2.dx; End_Vel.f = cadaoutput2_2.f;
 %User Line: End_Vel = cadaoutput2_2;
-cada1f1 = size(End_Pos.f,1);
-cada1f2 = cada1f1 - 1;
-cada1f3dx = End_Pos.dx(Gator1Data.Index1);
-cada1f3 = End_Pos.f(cada1f2,2);
-obj.dx = -cada1f3dx;
-obj.f = uminus(cada1f3);
-%User Line: obj = -End_Pos(end-1,2);
-%User Line: % obj = dot(z0 - x0_init, z0 - x0_init);
+%User Line: % obj = -End_Pos(end-1,2);
+cada1f1dx = z0.dx;
+cada1f1 = z0.f - x0_init;
+cada1f2dx = z0.dx;
+cada1f2 = z0.f - x0_init;
+cada1td1 = cada1f2(:).*cada1f1dx;
+cada1td1 = cada1td1 + cada1f1(:).*cada1f2dx;
+cada1f3dx = cada1td1;
+cada1f3 = cada1f1.*cada1f2;
+obj.dx = cada1f3dx;
+obj.f = sum(cada1f3);
+%User Line: obj = dot(z0 - x0_init, z0 - x0_init);
 obj.dx_size = 26;
-obj.dx_location = Gator1Data.Index2;
+obj.dx_location = Gator1Data.Index1;
 end
 function [End_Pos,End_Vel] = ADiGator_End_Effector_Pos_Vel1(RobotState)
 global ADiGator_Init_Obj_ADiGatorGrd

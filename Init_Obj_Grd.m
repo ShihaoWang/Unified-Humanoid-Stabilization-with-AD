@@ -19,6 +19,5 @@ else
     gx.dx = ones(26,1);
     obj = Init_Obj_ADiGatorGrd(gx);
     f = obj.f;
-gradf = zeros(26,1);
-gradf(obj.dx_location) = obj.dx;
+gradf = obj.dx;
 end
