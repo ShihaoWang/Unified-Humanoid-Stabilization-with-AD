@@ -1,9 +1,17 @@
-function P = Envi_Map_Defi(P)
+function Envi_Map = Envi_Map_Defi(flag)
 
 % This function is used to define the environment map for the simulation
-P.Envi_Map = [-100 0 100 0]; % This is the default flat ground
+% Whenever this function gets called, it will return the array with the
+% environment obstacle information
 
-P.Envi_Map = [P.Envi_Map; 5 0 5 10]; % This is a vertical wall at 5m
-
+% This is the default flat ground
+% This map is defined in a polyline manner with the first value denoting
+% the line length and the second value denoting the relative angle
+Envi_Map = [5, 0]; 
+Envi_Map = [Envi_Map; 3, pi/2];
+% [m,n] = size(Envi_Map);
+% if flag == 1
+%     Envi_Map = reshape(Envi_Map',m*n,1);
+% end
 end
 

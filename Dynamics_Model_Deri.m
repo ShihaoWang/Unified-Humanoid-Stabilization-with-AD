@@ -114,7 +114,6 @@ rCOM_den = 2 * (m_foot + m_shank + m_thigh + m_arm + m_forearm) + m_body;
 rCOM = simplify(rCOM_num/rCOM_den);
 matlabFunction(rCOM,'File','rCOM_fn');
 Q.rCOM = rCOM;
-
 r_vec = [rA;  rB;  rC;  rD;  rE;  rF;  rG;  rH;  rI;  rJ;  rK;  rL;  rM;  rN];
 
 % This part is the generalized coordinate of the robots
@@ -137,6 +136,12 @@ vK = jacobian(rK, q) * qdot;
 vL = jacobian(rL, q) * qdot; 
 vM = jacobian(rM, q) * qdot; 
 vN = jacobian(rN, q) * qdot; 
+vT = jacobian(rT, q) * qdot;
+
+vCOM = simplify(jacobian(rCOM,q) * qdot);
+Q.vCOM = vCOM;
+
+matlabFunction(vCOM, 'File', 'vCOM_fn');
 
 v_vec = [vA; vB; vC; vD; vE; vF; vG; vH; vI; vJ; vK; vL; vM; vN];
 
@@ -154,6 +159,7 @@ Q.vK = vK;
 Q.vL = vL;
 Q.vM = vM;
 Q.vN = vN;
+Q.vT = vT;
 
 [T_IH, V_IH] = Kinematics_Cal(AngxIH, 'AngxIH', q, qdot, r_vec, v_vec, p);
 [T_HG, V_HG] = Kinematics_Cal(AngxHG, 'AngxHG', q, qdot, r_vec, v_vec, p);
@@ -249,6 +255,7 @@ matlabFunction(vK,'File','vK_fn');%@(q4,q4dot,rIxdot,rIydot,thetadot,theta)
 matlabFunction(vL,'File','vL_fn');%@(rIxdot,rIydot,thetadot,theta)  
 matlabFunction(vM,'File','vM_fn');%@(q7,q7dot,rIxdot,rIydot,thetadot,theta)  
 matlabFunction(vN,'File','vN_fn');%@(q9,q9dot,rIxdot,rIydot,thetadot,theta)  
+matlabFunction(vT,'File','vT_fn');
 
 save('Symbolic_Structure.mat','Q');
 end

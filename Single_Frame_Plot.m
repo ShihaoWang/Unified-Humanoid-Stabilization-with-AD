@@ -1,4 +1,4 @@
-function Single_Frame_Plot(q_array_i, P, axes_plot)
+function Single_Frame_Plot(q_array_i,axes_plot)
 
 % This function plot the robot configuration given the current q_array
 rIx = q_array_i(1);    rIy = q_array_i(2);   theta = q_array_i(3);
@@ -7,21 +7,21 @@ q4 = q_array_i(7);     q5 = q_array_i(8);    q6 = q_array_i(9);
 q7 = q_array_i(10);     q8 = q_array_i(11);    q9 = q_array_i(12);
 q10 = q_array_i(13);   
 
-rA = P.rA_fn(q1,q2,q3,rIx,rIy,theta);
-rB = P.rB_fn(q1,q2,q3,rIx,rIy,theta);
-rC = P.rC_fn(q4,q5,q6,rIx,rIy,theta);
-rD = P.rD_fn(q4,q5,q6,rIx,rIy,theta);
-rE = P.rE_fn(q7,q8,rIx,rIy,theta);
-rF = P.rF_fn(q9,q10,rIx,rIy,theta);
-rG = P.rG_fn(q1,q2,rIx,rIy,theta);
-rH = P.rH_fn(q1,rIx,rIy,theta);
-rI = P.rI_fn(rIx,rIy);
-rJ = P.rJ_fn(q4,q5,rIx,rIy,theta);
-rK = P.rK_fn(q4,rIx,rIy,theta);
-rL = P.rL_fn(rIx,rIy,theta);
-rM = P.rM_fn(q7,rIx,rIy,theta);
-rN = P.rN_fn(q9,rIx,rIy,theta);
-rT = P.rT_fn(rIx,rIy,theta);
+rA = rA_fn(q1,q2,q3,rIx,rIy,theta);
+rB = rB_fn(q1,q2,q3,rIx,rIy,theta);
+rC = rC_fn(q4,q5,q6,rIx,rIy,theta);
+rD = rD_fn(q4,q5,q6,rIx,rIy,theta);
+rE = rE_fn(q7,q8,rIx,rIy,theta);
+rF = rF_fn(q9,q10,rIx,rIy,theta);
+rG = rG_fn(q1,q2,rIx,rIy,theta);
+rH = rH_fn(q1,rIx,rIy,theta);
+rI = rI_fn(rIx,rIy);
+rJ = rJ_fn(q4,q5,rIx,rIy,theta);
+rK = rK_fn(q4,rIx,rIy,theta);
+rL = rL_fn(rIx,rIy,theta);
+rM = rM_fn(q7,rIx,rIy,theta);
+rN = rN_fn(q9,rIx,rIy,theta);
+rT = rT_fn(rIx,rIy,theta);
 
 r_vec = [rA; rB; rC; rD; rE; rF; rG; rH; rI; rJ; rK; rL; rM; rN; rT];
 if nargin <3 

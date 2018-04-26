@@ -1,59 +1,32 @@
-function Obs_Dist = Obs_Dist_Fn(Point_i, Envi_Map, Direction)
-% This function gives the signed distance from a point to the surface of
-% environmental obstacle
-Obs_Dist_Array = [];
-if nargin<3
-    [m,~] = size(Envi_Map);
-    for i = 1:m
-        Envi_Map_i = Envi_Map(i,:);
-        Dist_i = Dist_Cal_Fn(Point_i, Envi_Map_i);       
-        Obs_Dist_Array_i = Dist_i;
-        Obs_Dist_Array = [Obs_Dist_Array;Obs_Dist_Array_i ];
-    end
-else
-    [m,~] = size(Envi_Map);
-    for i = 1:m
-        Envi_Map_i = Envi_Map(i,:);
-        Dist_i = Dist_Cal_Fn(Point_i, Envi_Map_i, Direction);
-        Obs_Dist_Array_i = Dist_i;
-        Obs_Dist_Array = [Obs_Dist_Array;Obs_Dist_Array_i ];
-    end
-end
-if length(Obs_Dist_Array)>1
-    Obs_Dist = min(Obs_Dist_Array);
-else
-    Obs_Dist = Obs_Dist_Array;
-end
+function Pos_Dist = Obs_Dist_Fn(End_Pos)
 
-end
-function Dist_i = Dist_Cal_Fn(Point_i, Envi_Map_i, Direction)
-% This function will compute the environmental obstacle geometry to have
-% the linear expression
-Envi_Map_Point_A_x = Envi_Map_i(1);
-Envi_Map_Point_A_y = Envi_Map_i(2);
-Envi_Map_Point_B_x = Envi_Map_i(3);
-Envi_Map_Point_B_y = Envi_Map_i(4);
-Dist_i = [];
-if nargin<3
-    if Envi_Map_Point_A_x == Envi_Map_Point_B_x
-        Dist_i = Envi_Map_Point_A_x - Point_i(1);
-        return
+% This function is used to calculate the relative distance between the
+% robot end effector and the nearby environment
+
+%% 1. Retrieve the environment obstacle information
+Envi_Map = Envi_Map_Defi(0);
+size_Map = size(Envi_Map);
+m_Map = size_Map(1);
+
+%% 2. Compute the polyline normal
+Edges = Map_Edge(Envi_Map);
+Edges_Normal_Angle = Polyline_Normal_fn(Envi_Map);
+
+%% 3. Then is to determine which bisector the current position lies within
+size_End_Pos = size(End_Pos);  % Here the m is a stack of the position vectors: 6 
+                                %          n is the number of coordinates: 2
+m_Pos = size_End_Pos(1);
+Pos_Dist = zeros(m_Pos,1);
+for i = 1:m_Pos
+    Pos_i = End_Pos(i,:);
+    Pos_Dist_temp = zeros(m_Map,1);
+    for j = 1:m_Map
+        Edge_temp = Edges(j,:);
+        Edge_Normal_temp = Edges_Normal_Angle(j,:);
+        Edge_Normal_vec_temp = [cos(Edge_Normal_temp) sin(Edge_Normal_temp)];
+        Edge_Offset = Pos_i - Edge_temp;
+        Pos_Dist_temp(j) = dot(Edge_Offset, Edge_Normal_vec_temp);
     end
-    if Envi_Map_Point_A_y == Envi_Map_Point_B_y
-        Dist_i = Point_i(2) - Envi_Map_Point_A_y;
-        return
-    end
-else
-    if Direction =='x'
-        if Envi_Map_Point_A_x == Envi_Map_Point_B_x
-            Dist_i = Envi_Map_Point_A_x - Point_i(1);
-            return
-        end
-    else
-        if Envi_Map_Point_A_y == Envi_Map_Point_B_y
-            Dist_i = Point_i(2) - Envi_Map_Point_A_y;
-            return
-        end
-    end
+    Pos_Dist(i) = min(Pos_Dist_temp);
 end
 end
