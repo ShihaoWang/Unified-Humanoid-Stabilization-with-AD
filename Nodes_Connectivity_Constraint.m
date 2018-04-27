@@ -1,14 +1,12 @@
 function [c,ceq] = Nodes_Connectivity_Constraint(z)
-global Ctrl_No mini Node_i Node_i_child
+global Ctrl_No mini Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_Ind_Goal
 c = []; ceq = [];
 
 %% Optimization variables unzip: delta_t, StateNdot_tot, Ctrl_tot, ContactForce_tot
 delta_t = z(1)/Ctrl_No;    
-stateNdot_ref = z(2:end);
-StateNdot_tot = stateNdot_ref(1:13*2*Ctrl_No,:);
-Ctrl_tot = stateNdot_ref(length(StateNdot_tot)+1:length(StateNdot_tot)+ Ctrl_No * 10,:);
-ContactForce_tot = z(1+length(Ctrl_tot) + length(StateNdot_tot) + 1:end,:);
-ContactForce_tot = reshape(ContactForce_tot, 12, Ctrl_No);
+stateNdotNCtrl_ref = z(2:end);
+StateNdot_tot = stateNdotNCtrl_ref(1:13*2*Ctrl_No,:);
+Ctrl_tot = stateNdotNCtrl_ref(1+length(StateNdot_tot):end,:);
 StateNdot_tot = reshape(StateNdot_tot, 26, Ctrl_No);
 Ctrl_tot = reshape(Ctrl_tot, 10, Ctrl_No);
 
@@ -27,13 +25,12 @@ end
 
 sigma_base = [sigma_i' sigma_tran' sigma_goal'];
 
-%% 1. Initial condition satisfaction constraint
 
 stateNdot_vec = zeros(Ctrl_No,1);
 
 for i = 1:Ctrl_No
     stateNdot_vec_temp = stateNdot_vec;    stateNdot_vec_temp(i) = 1;
-    stateNdot_i = StateNdot_tot * stateNdot_vec_temp;      Ctrl_i = Ctrl_tot(:,i);                lamda_i = ContactForce_tot(:,i);   
+    stateNdot_i = StateNdot_tot * stateNdot_vec_temp;      Ctrl_i = Ctrl_tot(:,i);                
     rIx_i = stateNdot_i(1);                rIy_i = stateNdot_i(2);                theta_i = stateNdot_i(3);
     q1_i = stateNdot_i(4);                 q2_i = stateNdot_i(5);                 q3_i = stateNdot_i(6);
     q4_i = stateNdot_i(7);                 q5_i = stateNdot_i(8);                 q6_i = stateNdot_i(9);
@@ -45,7 +42,8 @@ for i = 1:Ctrl_No
     q4dot_i = stateNdot_i(7+13);           q5dot_i = stateNdot_i(8+13);           q6dot_i = stateNdot_i(9+13);
     q7dot_i = stateNdot_i(10+13);          q8dot_i = stateNdot_i(11+13);          q9dot_i = stateNdot_i(12+13);
     q10dot_i = stateNdot_i(13+13);
-    
+    %% 1. Initial condition satisfaction constraint
+
     if i == 1
         ceq = [ceq; stateNdot_i - Node_i.robotstate];
     end
@@ -64,9 +62,22 @@ for i = 1:Ctrl_No
     C_q_qdot = C_q_qdot_fn(q1_i,q2_i,q3_i,q4_i,q5_i,q6_i,q7_i,q8_i,q9_i,q10_i,...
                            q10dot_i,q1dot_i,q2dot_i,q3dot_i,q4dot_i,q5dot_i,q6dot_i,q7dot_i,q8dot_i,q9dot_i,thetadot_i,theta_i);    
     Jac_Full = Jac_Full_fn(q1_i,q2_i,q3_i,q4_i,q5_i,q6_i,q7_i,q8_i,q9_i,q10_i,theta_i);
+    Jacdot_qdot = Jacdot_qdot_fn(q1_i,q2_i,q3_i,q4_i,q5_i,q6_i,q7_i,q8_i,q9_i,q10_i,...
+        q10dot_i,q1dot_i,q2dot_i,q3dot_i,q4dot_i,q5dot_i,q6dot_i,q7dot_i,q8dot_i,q9dot_i,thetadot_i,theta_i);
+    Active_In = Active_Ind_Tran;
+    if i == 1
+        Active_In = Active_Ind_Init;
+    end
+    if i == Ctrl_No
+        Active_In = Active_Ind_Goal;
+    end
+    Jac_Act = Jac_Full(Active_In,:);
+    Jacdot_qdot_Act = Jacdot_qdot(Active_In,:);
     
+    lamda_i = (Jac_Act *(D_q\Jac_Act'))\(Jac_Act * (D_q\C_q_qdot) - Jacdot_qdot_Act - Jac_Act * (D_q\(B_q * Ctrl_i)));
+
     %% 2. Dynamics constraints
-    Dyn_Via = D_q * qddot + C_q_qdot - Jac_Full' * lamda_i - B_q * Ctrl_i;
+    Dyn_Via = D_q * qddot + C_q_qdot - Jac_Act' * lamda_i - B_q * Ctrl_i;
     ceq = [ceq; Dyn_Via];
     
     %% 3. Complementarity constraints: Distance!!!---Node_i_child mode constraints
@@ -96,12 +107,10 @@ for i = 1:Ctrl_No
     
     c = [c; - (Inq_Pos_Matrix * Node_i_child_Pos_Dist - Inq_Pos_Matrix * ones(8,1) * mini)];
     
-    %% 4. Complementarity constraints: Contact Force!!!
-    Eqn_CF_Matrix = blkdiag(not(sigma_t(1)),not(sigma_t(1)), not(sigma_t(1)),not(sigma_t(1)),...
-                            not(sigma_t(2)),not(sigma_t(2)), not(sigma_t(2)),not(sigma_t(2)),...
-                            not(sigma_t(3)),not(sigma_t(3)), not(sigma_t(4)),not(sigma_t(4)));
-    ceq = [ceq; Eqn_CF_Matrix * lamda_i];    
-    Normal_Force = Normal_Force_Cal_fn(Node_i_child_Norm_Ang(1:end-2,:), lamda_i);
+    %% 4. Complementarity constraints: Contact Force!!!    
+    lamda_Full_i = Contact_Force_Back2Full(lamda_i, Active_In);
+
+    Normal_Force = Normal_Force_Cal_fn(Node_i_child_Norm_Ang(1:end-2,:), lamda_Full_i);
     c = [c; -Normal_Force];
     
     %% 5. Contact Constraint Maintenance: the previous contacts have to be maintained

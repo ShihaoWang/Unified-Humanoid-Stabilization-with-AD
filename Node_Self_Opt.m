@@ -13,15 +13,15 @@ setup.constraint = 'Nodes_Connectivity_Constraint';
 adifuncs = adigatorGenFiles4Fmincon(setup);
 Nodes_Connectivity_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','sqp','MaxIterations',inf,'MaxFunctionEvaluations',inf);
 
-[x0,fval0] = fmincon(@Nodes_Connectivity_Obj,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
-                     @Nodes_Connectivity_Constraint,Nodes_Connectivity_Opt);
+% [x0,fval0] = fmincon(@Nodes_Connectivity_Obj,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
+%                      @Nodes_Connectivity_Constraint,Nodes_Connectivity_Opt);
 
 tic;
-options = optimset('Algorithm','sqp');
-options = optimset(options,'GradObj','on','GradConstr','on','Display','off');
-options = optimset(options,'MaxIterations',inf,'MaxFunctionEvaluations',inf);
-[x1,fval1] = fmincon(adifuncs.objgrd,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
-                     adifuncs.consgrd,options);
+options = optimset('Algorithm','interior-point');
+options = optimset(options,'GradObj','on','GradConstr','on','Display','iter');
+options = optimset(options,'MaxFunEvals',inf,'MaxIter',inf);
+[x1,fval1] = fmincon(@Nodes_Connectivity_Obj_Grd,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
+                     @Nodes_Connectivity_Constraint_Jac,options);
 time1 = toc;
 
 end

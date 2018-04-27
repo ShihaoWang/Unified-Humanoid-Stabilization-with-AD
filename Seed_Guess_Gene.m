@@ -5,7 +5,7 @@ function [Flag, Opt_Seed, Opt_Lowbd, Opt_Uppbd]= Seed_Guess_Gene(varargin)
 % Since sigma_i and x_i are selected from the Frontier set, the
 % coresponding constraints have already been satisfied.
 % The problem becomes how to address the constraint of sigma_child
-global Node_i Node_i_child Tme_Seed Ctrl_No
+global Node_i Node_i_child Tme_Seed Ctrl_No Active_Ind_Init Active_Ind_Tran Active_Ind_Goal
 
 if length(varargin)>1
     Node_i = varargin{1};
@@ -15,8 +15,22 @@ else
     Node_i_child = Node_i;
 end
 
+sigma_i = Node_i.mode;
+sigma_i_child = Node_i_child.mode;
+sigma_i_change = sigma_i_child - sigma_i;
+if max(sigma_i_change)==1
+    % In this case, it is making contact
+    sigma_tran = sigma_i;
+    sigma_goal = sigma_i_child;
+else
+    % In this case, it is retracting contact or maintaining the same
+    % contact condition
+    sigma_tran = sigma_i_child;
+    sigma_goal = sigma_i_child;    
+end
+
 %% The first step is to generate a feasible robot state that satisfies the sigma_child
-[RobotState_LowBd, RobotState_UppBd, ContactForce_LowBd, ContactForce_UppBd, Ctrl_LowBd, Ctrl_UppBd] = Optimization_Bounds();
+[RobotState_LowBd, RobotState_UppBd, Ctrl_LowBd, Ctrl_UppBd] = Optimization_Bounds();
 Seed_Opt = optimoptions(@fmincon,'Display','off','Algorithm','sqp','MaxIterations',inf,'OptimalityTolerance',1e-8,'MaxFunctionEvaluations',inf);
 
 Flag = 0;
@@ -37,6 +51,7 @@ if (exitflag==1)||(exitflag==2)
 else
     return
 end
+% Single_Frame_Plot(x_i_child);
 %%  Here the desired configuration has been satisfied, then a seed control needs to be formulated
 %   The following optimization is conducted with a transcription approach     
 t_span = [0 Tme_Seed];
@@ -50,8 +65,6 @@ t_intp_span = linspace(t_span(1),t_span(2),Ctrl_No);
 x_intp = spline(t_span, x_span, t_intp_span);
 
 u_array = [];
-
-ContactForce_tot = randn(12,Ctrl_No);
 
 delta_t = t_intp_span(2) - t_intp_span(1);
 
@@ -86,23 +99,48 @@ for j = 1:Ctrl_No
     qddot = (x_statep1 - x_state - xdot * delta_t)/(1/2 * delta_t^2) ;
     D_q = D_q_fn(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,theta);
     B_q = B_q_fn();
-    C_q_qdot = C_q_qdot_fn(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,q10dot,q1dot,q2dot,q3dot,q4dot,q5dot,q6dot,q7dot,q8dot,q9dot,thetadot,theta);
-    lamda = ContactForce_tot(:,j);
-    
+    C_q_qdot = C_q_qdot_fn(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,q10dot,q1dot,q2dot,q3dot,q4dot,q5dot,q6dot,q7dot,q8dot,q9dot,thetadot,theta);    
     Jac_Full = Jac_Full_fn(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,theta);
-    %         Jacdot_qdot = Jacdot_qdot_fn(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,q10dot,q1dot,q2dot,q3dot,q4dot,q5dot,q6dot,q7dot,q8dot,q9dot,thetadot,theta);
-    u_i = B_q\(D_q * qddot + C_q_qdot - Jac_Full' * lamda);
+    Jacdot_qdot = Jacdot_qdot_fn(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,q10dot,q1dot,q2dot,q3dot,q4dot,q5dot,q6dot,q7dot,q8dot,q9dot,thetadot,theta);  
+    
+    u_i_seed = B_q\(D_q * qddot + C_q_qdot);
+    
+    if j == 1
+        sigma_t = sigma_i;
+    else
+        if j == Ctrl_No
+            sigma_t = sigma_goal;
+        else
+            sigma_t = sigma_tran;        
+        end
+    end
+    
+    Active_In = Active_In_Cal_fn(Jac_Full, sigma_t);
+    Jac_Act = Jac_Full(Active_In,:);
+    Jacdot_qdot_Act = Jacdot_qdot(Active_In,:);
+    
+    if j == 1
+        Active_Ind_Init = Active_In;
+    else
+        if j == Ctrl_No
+            Active_Ind_Goal = Active_In;
+        else
+            Active_Ind_Tran = Active_In;
+        end
+    end
+
+    lamda_i = (Jac_Act *(D_q\Jac_Act'))\(Jac_Act * (D_q\C_q_qdot) - Jacdot_qdot_Act - Jac_Act * (D_q\(B_q * u_i_seed)));
+    u_i = B_q\(D_q * qddot + C_q_qdot - Jac_Act' * lamda_i);
     u_array = [u_array u_i];
 end
 StateNDot_Seed = reshape(x_intp, length(C_q_qdot)*2*Ctrl_No, 1);
 Ctrl_Seed = reshape(u_array, length(u_i) *Ctrl_No,1 );
-ContactForce_Seed = reshape(ContactForce_tot, 12 *Ctrl_No, 1);
-Opt_Seed = [Tme_Seed; StateNDot_Seed; Ctrl_Seed; ContactForce_Seed];
+Opt_Seed = [Tme_Seed; StateNDot_Seed; Ctrl_Seed];
 
-Opt_Lowbd = 0.105;
+Opt_Lowbd = 0.1;
 Opt_Uppbd = inf; 
 
-Opt_Lowbd = [Opt_Lowbd; repmat(RobotState_LowBd', [Ctrl_No,1]); repmat(Ctrl_LowBd, [Ctrl_No,1]); repmat(ContactForce_LowBd, [Ctrl_No, 1])];
-Opt_Uppbd = [Opt_Uppbd; repmat(RobotState_UppBd', [Ctrl_No,1]); repmat(Ctrl_UppBd, [Ctrl_No,1]); repmat(ContactForce_UppBd, [Ctrl_No, 1])];
+Opt_Lowbd = [Opt_Lowbd; repmat(RobotState_LowBd', [Ctrl_No,1]); repmat(Ctrl_LowBd, [Ctrl_No,1])];
+Opt_Uppbd = [Opt_Uppbd; repmat(RobotState_UppBd', [Ctrl_No,1]); repmat(Ctrl_UppBd, [Ctrl_No,1])];
 
 end

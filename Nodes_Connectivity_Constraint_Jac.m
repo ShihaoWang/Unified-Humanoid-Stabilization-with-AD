@@ -16,9 +16,9 @@ if nargout == 2
     [c, ceq] = Nodes_Connectivity_Constraint(x);
 else
     gx.f = x;
-    gx.dx = ones(721,1);
+    gx.dx = ones(541,1);
     [con, coneq] = Nodes_Connectivity_Constraint_ADiGatorJac(gx);
     c = con.f; ceq = coneq.f;
-    gradc = sparse(con.dx_location(:,2),con.dx_location(:,1),con.dx,721,210);
-    gradceq = sparse(coneq.dx_location(:,2),coneq.dx_location(:,1),coneq.dx,721,1241);
+    gradc = sparse(con.dx_location(:,2),con.dx_location(:,1),con.dx,541,210);
+    gradceq = sparse(coneq.dx_location(:,2),coneq.dx_location(:,1),coneq.dx,541,1061);
 end

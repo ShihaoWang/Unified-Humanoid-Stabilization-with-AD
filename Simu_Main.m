@@ -1,6 +1,6 @@
 function Simu_Main()
 % This is the main program to run the whole simulation
-global Tme_Seed Ctrl_No mini Node_i Node_i_child
+global Tme_Seed Ctrl_No mini Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_Ind_Goal
 Tme_Seed = 2;       % The default time within each segment
 Ctrl_No = 15;       % Control grids within each segment
 mini = 0.05;        % An position offset

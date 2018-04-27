@@ -16,9 +16,9 @@ if nargout == 1
     f = Nodes_Connectivity_Obj(x);
 else
     gx.f = x;
-    gx.dx = ones(721,1);
+    gx.dx = ones(541,1);
     obj = Nodes_Connectivity_Obj_ADiGatorGrd(gx);
     f = obj.f;
-gradf = zeros(721,1);
+gradf = zeros(541,1);
 gradf(obj.dx_location) = obj.dx;
 end

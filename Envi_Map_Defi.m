@@ -7,8 +7,9 @@ function Envi_Map = Envi_Map_Defi(flag)
 % This is the default flat ground
 % This map is defined in a polyline manner with the first value denoting
 % the line length and the second value denoting the relative angle
-Envi_Map = [5, 0]; 
-Envi_Map = [Envi_Map; 3, pi/2];
+Envi_Map = zeros(2,2);
+Envi_Map(1,:) = [5, 0]; 
+Envi_Map(2,:) = [3, pi/2];
 % [m,n] = size(Envi_Map);
 % if flag == 1
 %     Envi_Map = reshape(Envi_Map',m*n,1);

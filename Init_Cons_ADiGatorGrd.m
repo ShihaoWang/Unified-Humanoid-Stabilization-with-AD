@@ -812,10 +812,14 @@ Gator1Data = ADiGator_Init_Cons_ADiGatorGrd.ADiGator_Envi_Map_Defi.Gator1Data;
 %User Line: % This is the default flat ground
 %User Line: % This map is defined in a polyline manner with the first value denoting
 %User Line: % the line length and the second value denoting the relative angle
-Envi_Map.f =  [5, 0];
-%User Line: Envi_Map = [5, 0];
-Envi_Map.f = [Envi_Map.f;Gator1Data.Data1];
-%User Line: Envi_Map = [Envi_Map; 3, pi/2];
+Envi_Map.f =  zeros(2,2);
+%User Line: Envi_Map = zeros(2,2);
+cada1temp1 = Gator1Data.Data1;
+Envi_Map.f(1,:) = cada1temp1;
+%User Line: Envi_Map(1,:) = [5, 0];
+cada1temp1 = Gator1Data.Data2;
+Envi_Map.f(2,:) = cada1temp1;
+%User Line: Envi_Map(2,:) = [3, pi/2];
 %User Line: % [m,n] = size(Envi_Map);
 %User Line: % if flag == 1
 %User Line: %     Envi_Map = reshape(Envi_Map',m*n,1);
@@ -866,7 +870,7 @@ for cadaforcount2 = 1:2
     %User Line: Temp_Edge = Temp_Edge + [Temp_Edge_x Temp_Edge_y];
 end
 end
-function [Pos_Dist_i,Env_Ind_i] = ADiGator_Min_Ind_Sel(Pos_Dist_temp)
+function [Pos_Dist_i,Env_Ind_vec] = ADiGator_Min_Ind_Sel(Pos_Dist_temp)
 global ADiGator_Init_Cons_ADiGatorGrd
 Gator1Data = ADiGator_Init_Cons_ADiGatorGrd.ADiGator_Min_Ind_Sel.Gator1Data;
 % ADiGator Start Derivative Computations
@@ -897,8 +901,26 @@ for cadaforcount2 = 1:1
         %User Line: Env_Ind_i = 1 + i;
     end
 end
+cada1f1 = 2;
+Env_Ind_vec.f = zeros(2,1);
+%User Line: Env_Ind_vec = zeros(length(Pos_Dist_temp),1);
+cada1f1 = 2;
+cada1tempf1 = zeros(1,2);
+cada1tempf1(1:cada1f1) = 1:cada1f1;
+cadaforvar3.f = cada1tempf1;
+%User Line: cadaforvar3 = 1:length(Pos_Dist_temp);
+for cadaforcount3 = 1:2
+    i.f = cadaforvar3.f(:,cadaforcount3);
+    %User Line: i = cadaforvar3(:,cadaforcount3);
+    cadaconditional1 = eq(i.f,Env_Ind_i.f);
+    %User Line: cadaconditional1 = i == Env_Ind_i;
+    if cadaconditional1
+        Env_Ind_vec.f(i.f) = 1;
+        %User Line: Env_Ind_vec(i) = 1;
+    end
 end
-function [Pos_Dist,Env_Ind] = ADiGator_Obs_Dist_Fn(End_Pos)
+end
+function [Pos_Dist,Env_Ang] = ADiGator_Obs_Dist_Fn(End_Pos)
 global ADiGator_Init_Cons_ADiGatorGrd
 Gator1Data = ADiGator_Init_Cons_ADiGatorGrd.ADiGator_Obs_Dist_Fn.Gator1Data;
 % ADiGator Start Derivative Computations
@@ -936,8 +958,8 @@ m_Pos.f = size_End_Pos.f(1);
 %User Line: m_Pos = size_End_Pos(1);
 Pos_Dist.f = zeros(m_Pos.f,1);
 %User Line: Pos_Dist = zeros(m_Pos,1);
-Env_Ind.f = Pos_Dist.f;
-%User Line: Env_Ind = Pos_Dist;
+Env_Ang.f = Pos_Dist.f;
+%User Line: Env_Ang = Pos_Dist;
 cadaforvar2.f = 1:m_Pos.f;
 %User Line: cadaforvar2 = 1:m_Pos;
 Pos_Dist.dx = zeros(50,1);
@@ -987,13 +1009,16 @@ for cadaforcount2 = 1:8
     % Call to function: Min_Ind_Sel
     Pos_Dist_i.dx = cadaoutput5_1.dx;     Pos_Dist_i.f = cadaoutput5_1.f;
     %User Line: Pos_Dist_i = cadaoutput5_1;
-    Env_Ind_i.f = cadaoutput5_2.f;
-    %User Line: Env_Ind_i = cadaoutput5_2;
+    Env_Ind_vec.f = cadaoutput5_2.f;
+    %User Line: Env_Ind_vec = cadaoutput5_2;
     Pos_Dist.dx(logical(Gator1Data.Index2(:,cadaforcount2))) = Pos_Dist_i.dx(nonzeros(Gator1Data.Index2(:,cadaforcount2)));
     Pos_Dist.f(i.f) = Pos_Dist_i.f;
     %User Line: Pos_Dist(i) = Pos_Dist_i;
-    Env_Ind.f(i.f) = Env_Ind_i.f;
-    %User Line: Env_Ind(i) = Env_Ind_i;
+    cada1f1 = Env_Ind_vec.f.*Edges_Normal_Angle.f;
+    cada1f2 = 2;
+    cada1f3 = sum(cada1f1);
+    Env_Ang.f(i.f) = cada1f3;
+    %User Line: Env_Ang(i) = dot(Env_Ind_vec, Edges_Normal_Angle);
 end
 end
 function Edges_Normal_Angle = ADiGator_Polyline_Normal_fn(Envi_Map)

@@ -1,4 +1,4 @@
-function [RobotState_LowBd, RobotState_UppBd, ContactForce_LowBd, ContactForce_UppBd, Ctrl_LowBd, Ctrl_UppBd] = Optimization_Bounds()
+function [RobotState_LowBd, RobotState_UppBd, Ctrl_LowBd, Ctrl_UppBd] = Optimization_Bounds()
 
 %% 1. Robot state bounds
 rIxlow = -Inf;                  rIxupp = Inf;
@@ -36,11 +36,7 @@ RobotState_LowBd = [rIxlow rIylow thetalow q1low q2low q3low q4low q5low q6low q
 RobotState_UppBd = [rIxupp rIyupp thetaupp q1upp q2upp q3upp q4upp q5upp q6upp q7upp q8upp q9upp q10upp...
                     rIxdotupp rIydotupp thetadotupp q1dotupp q2dotupp q3dotupp q4dotupp q5dotupp q6dotupp q7dotupp q8dotupp q9dotupp q10dotupp];
 
-%% 2. Contact force bounds 
-ContactForce_LowBd = -ones(12,1)*Inf;
-ContactForce_UppBd = -ContactForce_LowBd;
-
-%% 3. Upper and Lower bounds of the control variables                    
+%% 2. Upper and Lower bounds of the control variables                    
 tau1_max = 100;             tau2_max = 100;             tau3_max = 100;
 tau4_max = 100;             tau5_max = 100;             tau6_max = 100;
 tau7_max = 60;              tau8_max = 50;              tau9_max = 60;             tau10_max = 50;
