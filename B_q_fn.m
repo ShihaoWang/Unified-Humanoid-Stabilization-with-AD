@@ -1,4 +1,4 @@
-function B_q = B_q_fn
+function B_q = B_q_fn(flag)
 %B_Q_FN
 %    B_Q = B_Q_FN
 

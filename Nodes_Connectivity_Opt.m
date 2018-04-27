@@ -1,7 +1,6 @@
-function [Flag, Var_Opt] = Nodes_Connectivity_Opt(sigma_i, x_i, sigma_i_child, P)
+function [Flag, Var_Opt] = Nodes_Connectivity_Opt()
 
-% This function test the connectivity between a certain node and its child
-% node
+% This function test the connectivity between two nodes
 
 % The current idea is to make sure of the multiple shooting method since in
 % this case the dynamics constraints are satisfied automatically

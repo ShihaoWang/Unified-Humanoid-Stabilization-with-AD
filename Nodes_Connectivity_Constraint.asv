@@ -70,8 +70,34 @@ for i = 1:Ctrl_No
     ceq = [ceq; Dyn_Via];
     
     %% 3. Complementarity constraints: Distance!!!---Node_i_child mode constraints
-    [Node_i_child_Pos, Node_i_child_Vel] = End_Effector_Pos_Vel(stateNdot_i);
-    [Node_i_child_Pos_Dist, Node_i_child_Norm_Ang]= Obs_Dist_Fn(Node_i_child_Pos);
+    
+%     rA = rA_fn(q1_i,q2_i,q3_i,rIx_i,rIy_i,theta_i);
+%     rB = rB_fn(q1_i,q2_i,q3_i,rIx_i,rIy_i,theta_i);
+%     rC = rC_fn(q4_i,q5_i,q6_i,rIx_i,rIy_i,theta_i);
+%     rD = rD_fn(q4_i,q5_i,q6_i,rIx_i,rIy_i,theta_i);
+%     rE = rE_fn(q7_i,q8_i,rIx_i,rIy_i,theta_i);
+%     rF = rF_fn(q9_i,q10_i,rIx_i,rIy_i,theta_i);
+%     rT = rT_fn(rIx_i,rIy_i,theta_i);
+%     rCOM = rCOM_fn(q1_i,q2_i,q3_i,q4_i,q5_i,q6_i,q7_i,q8_i,q9_i,q10_i,rIx_i,rIy_i,theta_i);
+%     
+%     vA = vA_fn(q1_i,q2_i,q3_i,q1dot_i,q2dot_i,q3dot_i,rIxdot_i,rIydot_i,thetadot_i,theta_i);
+%     vB = vB_fn(q1_i,q2_i,q3_i,q1dot_i,q2dot_i,q3dot_i,rIxdot_i,rIydot_i,thetadot_i,theta_i);
+%     vC = vC_fn(q4_i,q5_i,q6_i,q4dot_i,q5dot_i,q6dot_i,rIxdot_i,rIydot_i,thetadot_i,theta_i);
+%     vD = vD_fn(q4_i,q5_i,q6_i,q4dot_i,q5dot_i,q6dot_i,rIxdot_i,rIydot_i,thetadot_i,theta_i);
+%     vE = vE_fn(q7_i,q8_i,q7dot_i,q8dot_i,rIxdot_i,rIydot_i,thetadot_i,theta_i);
+%     vF = vF_fn(q9_i,q10_i,q10dot_i,q9dot_i,rIxdot_i,rIydot_i,thetadot_i,theta_i);
+%     vT = vT_fn(rIxdot_i,rIydot_i,thetadot_i,theta_i);
+%     vCOM = vCOM_fn(q1_i,q2_i,q3_i,q4_i,q5_i,q6_i,q7_i,q8_i,q9_i,q10_i,...
+%                    q10dot_i,q1dot_i,q2dot_i,q3dot_i,q4dot_i,q5dot_i,...
+%                    q6dot_i,q7dot_i,q8dot_i,q9dot_i,rIxdot_i,rIydot_i,thetadot_i,theta_i);
+%     
+%     End_Pos = [rA'; rB'; rC'; rD'; rE'; rF'; rT'; rCOM'];
+%     End_Vel = [vA'; vB'; vC'; vD'; vE'; vF'; vT'; vCOM'];
+%     Node_i_child_Pos = End_Pos;
+%     Node_i_child_Vel = End_Vel;
+    
+    [Node_i_child_Pos, Node_i_child_Vel] = End_Effector_Pos_Vel(rIx rIy theta q1 q2 q3 q4 q5 q6 q7 q8 q9 q10);
+    [Node_i_child_Pos_Dist, Node_i_child_Pos_Ind]= Obs_Dist_Fn(Node_i_child_Pos);
     Node_i_child_Vel = reshape(Node_i_child_Vel',16,1);
     
     sigma_vec_sel = [0 1 0]';
@@ -97,16 +123,18 @@ for i = 1:Ctrl_No
     c = [c; - (Inq_Pos_Matrix * Node_i_child_Pos_Dist - Inq_Pos_Matrix * ones(8,1) * mini)];
     
     %% 4. Complementarity constraints: Contact Force!!!
+    Envi_Map = Envi_Map_Defi(1);
+    Edges_Normal_Angle = Polyline_Normal_fn(Envi_Map);
     Eqn_CF_Matrix = blkdiag(not(sigma_t(1)),not(sigma_t(1)), not(sigma_t(1)),not(sigma_t(1)),...
                             not(sigma_t(2)),not(sigma_t(2)), not(sigma_t(2)),not(sigma_t(2)),...
                             not(sigma_t(3)),not(sigma_t(3)), not(sigma_t(4)),not(sigma_t(4)));
     ceq = [ceq; Eqn_CF_Matrix * lamda_i];    
-    Normal_Force = Normal_Force_Cal_fn(Node_i_child_Norm_Ang(1:end-2,:), lamda_i);
+    Normal_Force = Normal_Force_Cal_fn(Edges_Normal_Angle, Node_i_child_Pos_Ind, lamda_i);
     c = [c; -Normal_Force];
     
     %% 5. Contact Constraint Maintenance: the previous contacts have to be maintained
-    Node_i_Pos = Node_i.End_Pos;
-    Node_i_Vel = Node_i.End_Vel;
+    Node_i_State = Node_i.robotstate;
+    [Node_i_Pos, Node_i_Vel]= End_Effector_Pos_Vel(Node_i_State);
     Eqn_Maint_Matrix = blkdiag(sigma_i(1) * sigma_i_child(1), sigma_i(1) * sigma_i_child(1),...
                                sigma_i(1) * sigma_i_child(1), sigma_i(1) * sigma_i_child(1),...
                                sigma_i(2) * sigma_i_child(2), sigma_i(2) * sigma_i_child(2),...

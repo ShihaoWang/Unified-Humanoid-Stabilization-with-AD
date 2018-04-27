@@ -1,6 +1,6 @@
 function [c,ceq] = Init_Cons(z0)
 
-global sigma0
+global sigma0 mini
 
 c = []; ceq = [];
 
@@ -20,9 +20,9 @@ ceq = [ceq; Eqn_Pos_Matrix * Pos_Dist];
 ceq = [ceq; Eqn_Vel_Matrix * End_Vel];
 
 
-% Inq_Pos_Matrix = blkdiag(sigma0(1),sigma0(1), sigma0(2),sigma0(2),...
-%                          sigma0(3),sigma0(4),0,0);
+Inq_Pos_Matrix = blkdiag(not(sigma0(1)),not(sigma0(1)), not(sigma0(2)),not(sigma0(2)),...
+                         not(sigma0(3)),not(sigma0(4)),0,0);
 
-c = [c; -Pos_Dist];
+c = [c; - (Inq_Pos_Matrix * Pos_Dist - Inq_Pos_Matrix * ones(8,1) * mini)];
 
 end

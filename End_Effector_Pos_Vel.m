@@ -25,14 +25,14 @@ rCOM = rCOM_fn(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,rIx,rIy,theta);
 End_Pos = [rA'; rB'; rC'; rD'; rE'; rF'; rT'; rCOM'];
 
 vA = vA_fn(q1,q2,q3,q1dot,q2dot,q3dot,rIxdot,rIydot,thetadot,theta);
-vB = vB_fn(q1,q2,q3,q1dot,q2dot,q3dot,rIxdot,rIydot,thetadot,theta); 
+vB = vB_fn(q1,q2,q3,q1dot,q2dot,q3dot,rIxdot,rIydot,thetadot,theta);
 vC = vC_fn(q4,q5,q6,q4dot,q5dot,q6dot,rIxdot,rIydot,thetadot,theta);
 vD = vD_fn(q4,q5,q6,q4dot,q5dot,q6dot,rIxdot,rIydot,thetadot,theta);
 vE = vE_fn(q7,q8,q7dot,q8dot,rIxdot,rIydot,thetadot,theta);
 vF = vF_fn(q9,q10,q10dot,q9dot,rIxdot,rIydot,thetadot,theta);
-vT = vT_fn(rIxdot,rIydot,thetadot,theta); 
+vT = vT_fn(rIxdot,rIydot,thetadot,theta);
 vCOM = vCOM_fn(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,q10dot,q1dot,q2dot,q3dot,q4dot,q5dot,q6dot,q7dot,q8dot,q9dot,rIxdot,rIydot,thetadot,theta);
- 
+
 End_Vel = [vA'; vB'; vC'; vD'; vE'; vF'; vT'; vCOM'];
 end
 

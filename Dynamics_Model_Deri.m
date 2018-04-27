@@ -203,7 +203,7 @@ B_q = -jacobian(Eqn, u);
 C_q_qdot = simplify(Eqn - D_q * qddot + B_q * u);
 
 matlabFunction(D_q,'File','D_q_fn'); 
-matlabFunction(B_q,'File','B_q_fn');
+% matlabFunction(B_q,'File','B_q_fn');
 matlabFunction(C_q_qdot,'File','C_q_qdot_fn'); 
 
 Q.D_q = D_q;

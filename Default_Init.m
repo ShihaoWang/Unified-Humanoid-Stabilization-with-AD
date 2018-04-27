@@ -18,7 +18,7 @@ global x0_init
 x0_init = [rIx rIy theta q1 q2 q3 q4 q5 q6 q7 q8 q9 q10,...
            rIxdot rIydot thetadot q1dot q2dot q3dot q4dot q5dot q6dot q7dot q8dot q9dot q10dot]';
   
-Init_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','sqp','MaxIterations',inf);
+Init_Opt = optimoptions(@fmincon,'Display','off','Algorithm','sqp','Maxiterations',inf,'MaxFunctionEvaluations',inf);
 [RobotState_LowBd, RobotState_UppBd, ~, ~, ~, ~] = Optimization_Bounds();
 
 Grad_Hess_Flag = 0;
@@ -40,7 +40,7 @@ time0 = toc;
 % ------------------- Solve With 1st Derivatives ---------------------- %
 tic;
 options = optimset('Algorithm','sqp');
-options = optimset(options,'GradObj','on','GradConstr','on','Display','iter');
+options = optimset(options,'GradObj','on','GradConstr','on','Display','off');
 [x1,fval1] = fmincon(@Init_Obj_Grd,x0_init,[],[],[],[],RobotState_LowBd,RobotState_UppBd,...
     @Init_Cons_Grd,options);
 time1 = toc;
@@ -48,7 +48,7 @@ time1 = toc;
 % ------------------- Solve With 2nd Derivatives ---------------------- %
 tic;
 options = optimset('Algorithm','sqp',...
-    'Display','iter','GradObj','on','GradConstr','on',...
+    'Display','off','GradObj','on','GradConstr','on',...
     'Hessian','user-supplied','HessFcn',@Init_Obj_Hes);
 [x2,fval2] = fmincon(@Init_Obj_Grd,x0_init,[],[],[],[],RobotState_LowBd,RobotState_UppBd,...
     @Init_Cons_Grd,options);
