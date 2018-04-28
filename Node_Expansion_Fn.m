@@ -1,4 +1,4 @@
-function sigma_children = Node_Expansion_Fn(sigma_i, x_i, P)
+function sigma_children = Node_Expansion_Fn(sigma_i, x_i)
 
 % This function is the main function used to expansion the given node to
 % its adjacent nodes without any connectivity test
@@ -6,16 +6,13 @@ function sigma_children = Node_Expansion_Fn(sigma_i, x_i, P)
 %%      Inputs;
 %           sigma_i:        the contact status at the time i
 %           x0:             the robot state at time i
-%           P:              the pre-load structure
 
 %%      Output:
 %           sigma_children: the updated queue after a node expansion
 
 %%      The main algorithm
 %
-%       Hand contact: 0-> Try the kinematical maximum step length to test the collision
-%                           if collision detected? 
-%                               Expanded with adding one hand contact
+%       Hand contact: 0-> Add hand contact for each end effector
 %                     1-> Since one hand is in contact,
 %                               Expanded with adding the other hand contact
 %                                             removing the current hand contact

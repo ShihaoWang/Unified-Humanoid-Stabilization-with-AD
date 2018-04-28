@@ -27,13 +27,13 @@ R = [{Node}];
 while isempty(R)==0
     [Node_i, R, Ind_i] = Frontier_Node_Pop(R);
     [Flag_i, Var_Opt, Var_Value] = Node_Self_Opt(Node_i);
+    if (Flag_i ==1)&&(Var_Value<=0.01)
+        break;
+    end
     
-    [Flag, Var_Opt] = Nodes_Connectivity_Opt();
+    [Flag, Var_Opt] = Nodes_Connectivity_Opt(Node_i);
 end
 
 sigma_children = Node_Expansion_Fn(Node0);
-% % sigma_i_child = [1 1 0 0];
-sigma_i_child = sigma_children(2,:);
 
-[Flag, Var_Opt] = Nodes_Connectivity_Opt(sigma_i, x_i, sigma_i_child, P);
 end
