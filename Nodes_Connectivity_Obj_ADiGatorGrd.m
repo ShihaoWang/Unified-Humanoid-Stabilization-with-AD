@@ -33,10 +33,9 @@ StateNdot_tot.f = reshape(StateNdot_tot.f,26,Ctrl_No);
 %User Line: StateNdot_tot = reshape(StateNdot_tot, 26, Ctrl_No);
 T.f =  0;
 %User Line: T = 0;
-cada1f1 = size(StateNdot_tot.f,2);
 x_i.dx = StateNdot_tot.dx(Gator1Data.Index3);
-x_i.f = StateNdot_tot.f(:,cada1f1);
-%User Line: x_i = StateNdot_tot(:,end);
+x_i.f = StateNdot_tot.f(:,Ctrl_No);
+%User Line: x_i = StateNdot_tot(:,Ctrl_No);
 rIx.dx = x_i.dx(1);
 rIx.f = x_i.f(1);
 %User Line: rIx = x_i(1);
@@ -163,18 +162,26 @@ cadainput2_23.dx = thetadot.dx; cadainput2_23.f = thetadot.f;
 %User Line: cadainput2_23 = thetadot;
 cadainput2_24.dx = theta.dx; cadainput2_24.f = theta.f;
 %User Line: cadainput2_24 = theta;
-cadaoutput2_1 = ADiGator_T_fn1(cadainput2_1,cadainput2_2,cadainput2_3,cadainput2_4,cadainput2_5,cadainput2_6,cadainput2_7,cadainput2_8,cadainput2_9,cadainput2_10,cadainput2_11,cadainput2_12,cadainput2_13,cadainput2_14,cadainput2_15,cadainput2_16,cadainput2_17,cadainput2_18,cadainput2_19,cadainput2_20,cadainput2_21,cadainput2_22,cadainput2_23,cadainput2_24);
+cadaoutput2_1 = ADiGator_T_fn(cadainput2_1,cadainput2_2,cadainput2_3,cadainput2_4,cadainput2_5,cadainput2_6,cadainput2_7,cadainput2_8,cadainput2_9,cadainput2_10,cadainput2_11,cadainput2_12,cadainput2_13,cadainput2_14,cadainput2_15,cadainput2_16,cadainput2_17,cadainput2_18,cadainput2_19,cadainput2_20,cadainput2_21,cadainput2_22,cadainput2_23,cadainput2_24);
 % Call to function: T_fn
 T.dx = cadaoutput2_1.dx; T.f = cadaoutput2_1.f;
 %User Line: T = cadaoutput2_1;
 Obj.dx = T.dx; Obj.f = T.f;
 %User Line: Obj = T;
+cadaconditional1 = lt(T.f,0.01);
+%User Line: cadaconditional1 = T<0.01;
+if cadaconditional1
+    Obj.f =  0.01;
+    Obj.dx = zeros(24,1);
+    %User Line: Obj = 0.01;
+else
+end
 Obj.dx_size = 541;
 Obj.dx_location = Gator1Data.Index4;
 end
-function T = ADiGator_T_fn1(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,q10dot,q1dot,q2dot,q3dot,q4dot,q5dot,q6dot,q7dot,q8dot,q9dot,rIxdot,rIydot,thetadot,theta)
+function T = ADiGator_T_fn(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,q10dot,q1dot,q2dot,q3dot,q4dot,q5dot,q6dot,q7dot,q8dot,q9dot,rIxdot,rIydot,thetadot,theta)
 global ADiGator_Nodes_Connectivity_Obj_ADiGatorGrd
-Gator1Data = ADiGator_Nodes_Connectivity_Obj_ADiGatorGrd.ADiGator_T_fn1.Gator1Data;
+Gator1Data = ADiGator_Nodes_Connectivity_Obj_ADiGatorGrd.ADiGator_T_fn.Gator1Data;
 % ADiGator Start Derivative Computations
 %User Line: %T_FN
 %User Line: %    T = T_FN(Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q10DOT,Q1DOT,Q2DOT,Q3DOT,Q4DOT,Q5DOT,Q6DOT,Q7DOT,Q8DOT,Q9DOT,RIXDOT,RIYDOT,THETADOT,THETA)

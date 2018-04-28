@@ -22,19 +22,27 @@ else
     sigma_goal = sigma_i_child;    
 end
 
-setup.order = 2;
-setup.numvar = length(Opt_Seed);
-setup.objective  = 'Nodes_Connectivity_Obj';
-setup.constraint = 'Nodes_Connectivity_Constraint';
+% setup.order = 1;
+% setup.numvar = length(Opt_Seed);
+% setup.objective  = 'Nodes_Connectivity_Obj';
+% setup.constraint = 'Nodes_Connectivity_Constraint';
+% 
+% adifuncs = adigatorGenFiles4Fmincon(setup);
 
-adifuncs = adigatorGenFiles4Fmincon(setup);
 tic
 Nodes_Connectivity_Init_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','interior-point',...
-    'MaxIterations',inf,'MaxFunctionEvaluations',inf,'StepTolerance',1e-4);
+    'MaxIterations',25,'MaxFunctionEvaluations',inf,'StepTolerance',1e-4);
 
 
 [Var_Opt,fval,exitflag] = fmincon(@Nodes_Connectivity_Obj,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
                   @Nodes_Connectivity_Constraint,Nodes_Connectivity_Init_Opt);
+
+Nodes_Connectivity_Fur_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','sqp',...
+    'MaxIterations',inf,'MaxFunctionEvaluations',inf,'StepTolerance',1e-4);
+
+
+[Var_Opt,fval,exitflag] = fmincon(@Nodes_Connectivity_Obj,Var_Opt,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
+                  @Nodes_Connectivity_Constraint,Nodes_Connectivity_Fur_Opt); 
 Flag = 0;              
 if (exitflag==1)||(exitflag==2)
     Flag =1;

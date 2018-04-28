@@ -120,7 +120,11 @@ for i = 1:Ctrl_No
     ceq = [ceq; Eqn_Maint_Matrix * (Node_i_Pos - Node_i_child_Pos)];
     
     %% 6. Friction cone constraints:
-    c = [c;  Tang_Force.*Tang_Force - mu * mu * Normal_Force.*Normal_Force];    
+    c_FC = zeros(length(Tang_Force),1);
+    for mm =1:length(Tang_Force)
+        c_FC(mm) = Tang_Force(mm) * Tang_Force(mm) - mu * mu * Normal_Force(mm) * Normal_Force(mm);        
+    end
+    c = [c;  c_FC];    
 end
 
 end
