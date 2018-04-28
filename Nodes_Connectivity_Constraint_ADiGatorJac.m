@@ -10,13 +10,34 @@
 % provided 'AS IS' with NO WARRANTIES OF ANY KIND and no merchantability
 % or fitness for any purpose or application.
 
-function [c,ceq] = Nodes_Connectivity_Constraint_ADiGatorJac(z)
+function [c,ceq] = Nodes_Connectivity_Constraint_ADiGatorJac(z,auxdata)
 global ADiGator_Nodes_Connectivity_Constraint_ADiGatorJac
 if isempty(ADiGator_Nodes_Connectivity_Constraint_ADiGatorJac); ADiGator_LoadData(); end
 Gator1Data = ADiGator_Nodes_Connectivity_Constraint_ADiGatorJac.Nodes_Connectivity_Constraint_ADiGatorJac.Gator1Data;
 % ADiGator Start Derivative Computations
-global Ctrl_No mini Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_Ind_Goal 
-%User Line: global
+%User Line: % Auxdata unzip
+Ctrl_No = auxdata.Ctrl_No;
+%User Line: Ctrl_No = auxdata.Ctrl_No;
+mini = auxdata.mini;
+%User Line: mini = auxdata.mini;
+Node_i = auxdata.Node_i;
+%User Line: Node_i = auxdata.Node_i;
+Node_i_child = auxdata.Node_i_child;
+%User Line: Node_i_child = auxdata.Node_i_child;
+Active_Ind_Init = auxdata.Active_Ind_Init;
+%User Line: Active_Ind_Init = auxdata.Active_Ind_Init;
+Active_Ind_Tran = auxdata.Active_Ind_Tran;
+%User Line: Active_Ind_Tran = auxdata.Active_Ind_Tran;
+Active_Ind_Goal = auxdata.Active_Ind_Goal;
+%User Line: Active_Ind_Goal = auxdata.Active_Ind_Goal;
+sigma_i = auxdata.sigma_i;
+%User Line: sigma_i = auxdata.sigma_i;
+sigma_i_child = auxdata.sigma_i_child;
+%User Line: sigma_i_child = auxdata.sigma_i_child;
+sigma_tran = auxdata.sigma_tran;
+%User Line: sigma_tran = auxdata.sigma_tran;
+sigma_goal = auxdata.sigma_goal;
+%User Line: sigma_goal = auxdata.sigma_goal;
 c.f =  [];
 %User Line: c = [];
 ceq.f =  [];
@@ -50,23 +71,6 @@ StateNdot_tot.f = reshape(StateNdot_tot.f,26,Ctrl_No);
 Ctrl_tot.dx = Ctrl_tot.dx;
 Ctrl_tot.f = reshape(Ctrl_tot.f,10,Ctrl_No);
 %User Line: Ctrl_tot = reshape(Ctrl_tot, 10, Ctrl_No);
-sigma_i = Node_i.mode;
-%User Line: sigma_i = Node_i.mode;
-sigma_i_child = Node_i_child.mode;
-%User Line: sigma_i_child = Node_i_child.mode;
-sigma_i_change.f = sigma_i_child - sigma_i;
-%User Line: sigma_i_change = sigma_i_child - sigma_i;
-cada1f1 = max(sigma_i_change.f);
-cadaconditional1 = eq(cada1f1,1);
-%User Line: cadaconditional1 = max(sigma_i_change)==1;
-    %User Line: % In this case, it is making contact
-    %User Line: sigma_tran = sigma_i;
-    %User Line: sigma_goal = sigma_i_child;
-    %User Line: % In this case, it is retracting contact
-    sigma_tran = sigma_i_child;
-    %User Line: sigma_tran = sigma_i_child;
-    sigma_goal = sigma_i_child;
-    %User Line: sigma_goal = sigma_i_child;
 cada1f1 = sigma_i.';
 cada1f2 = sigma_tran.';
 cada1f3 = sigma_goal.';

@@ -25,24 +25,24 @@ auxdata.Active_Ind_Init = Active_Ind_Init;  auxdata.Active_Ind_Tran = Active_Ind
 auxdata.sigma_i = sigma_i;                  auxdata.sigma_i_child = sigma_i_child;
 auxdata.sigma_tran = sigma_tran;            auxdata.sigma_goal = sigma_goal;
 
-setup.order = 2;
-setup.numvar = length(Opt_Seed);
-setup.objective  = 'Nodes_Connectivity_Obj';
-setup.constraint = 'Nodes_Connectivity_Constraint';
-setup.auxdata = auxdata;
+% setup.order = 1;
+% setup.numvar = length(Opt_Seed);
+% setup.objective  = 'Nodes_Connectivity_Obj';
+% setup.constraint = 'Nodes_Connectivity_Constraint';
+% setup.auxdata = auxdata;
+% 
+% adifuncs = adigatorGenFiles4Fmincon(setup);
+% Nodes_Connectivity_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','sqp','MaxIterations',inf,'MaxFunctionEvaluations',inf);
+% 
+% [x0,fval0] = fmincon(@Nodes_Connectivity_Obj,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
+%                      @Nodes_Connectivity_Constraint,Nodes_Connectivity_Opt);
 
-adifuncs = adigatorGenFiles4Fmincon(setup);
-Nodes_Connectivity_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','sqp','MaxIterations',inf,'MaxFunctionEvaluations',inf);
-
-[x0,fval0] = fmincon(@Nodes_Connectivity_Obj,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
-                     @Nodes_Connectivity_Constraint,Nodes_Connectivity_Opt);
-
-% tic;
-% options = optimset('Algorithm','interior-point');
-% options = optimset(options,'GradObj','on','GradConstr','on','Display','iter');
-% options = optimset(options,'MaxFunEvals',inf,'MaxIter',inf);
-% [x1,fval1] = fmincon(@Nodes_Connectivity_Obj_Grd,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
-%                      @Nodes_Connectivity_Constraint_Jac,options);
-% time1 = toc;
+tic;
+options = optimset('Algorithm','sqp');
+options = optimset(options,'GradObj','on','GradConstr','on','Display','iter');
+options = optimset(options,'MaxFunEvals',inf,'MaxIter',inf);
+[x1,fval1] = fmincon(@Nodes_Connectivity_Obj_Grd,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
+                     @Nodes_Connectivity_Constraint_Jac,options,auxdata);
+time1 = toc;
 
 end
