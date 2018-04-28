@@ -10,13 +10,13 @@
 % provided 'AS IS' with NO WARRANTIES OF ANY KIND and no merchantability
 % or fitness for any purpose or application.
 
-function Obj = Nodes_Connectivity_Obj_ADiGatorGrd(z)
+function Obj = Nodes_Connectivity_Obj_ADiGatorGrd(z,auxdata)
 global ADiGator_Nodes_Connectivity_Obj_ADiGatorGrd
 if isempty(ADiGator_Nodes_Connectivity_Obj_ADiGatorGrd); ADiGator_LoadData(); end
 Gator1Data = ADiGator_Nodes_Connectivity_Obj_ADiGatorGrd.Nodes_Connectivity_Obj_ADiGatorGrd.Gator1Data;
 % ADiGator Start Derivative Computations
-global Ctrl_No 
-%User Line: global
+Ctrl_No = auxdata.Ctrl_No;
+%User Line: Ctrl_No = auxdata.Ctrl_No;
 cada1f1 = 36*Ctrl_No;
 cada1f2 = 1 + cada1f1;
 cada1f3 = 2:cada1f2;
@@ -33,7 +33,6 @@ StateNdot_tot.f = reshape(StateNdot_tot.f,26,Ctrl_No);
 %User Line: StateNdot_tot = reshape(StateNdot_tot, 26, Ctrl_No);
 T.f =  0;
 %User Line: T = 0;
-%User Line: % for i = 1:Ctrl_No
 cada1f1 = size(StateNdot_tot.f,2);
 x_i.dx = StateNdot_tot.dx(Gator1Data.Index3);
 x_i.f = StateNdot_tot.f(:,cada1f1);
@@ -168,7 +167,6 @@ cadaoutput2_1 = ADiGator_T_fn1(cadainput2_1,cadainput2_2,cadainput2_3,cadainput2
 % Call to function: T_fn
 T.dx = cadaoutput2_1.dx; T.f = cadaoutput2_1.f;
 %User Line: T = cadaoutput2_1;
-%User Line: % end
 Obj.dx = T.dx; Obj.f = T.f;
 %User Line: Obj = T;
 Obj.dx_size = 541;
