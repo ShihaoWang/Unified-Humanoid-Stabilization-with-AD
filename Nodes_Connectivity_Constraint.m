@@ -1,5 +1,5 @@
 function [c,ceq] = Nodes_Connectivity_Constraint(z)
-global Ctrl_No mini Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_Ind_Goal sigma_i sigma_i_child sigma_tran sigma_goal
+global Ctrl_No mini mu Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_Ind_Goal sigma_i sigma_i_child sigma_tran sigma_goal
 c = []; ceq = [];
 
 %% Optimization variables unzip: delta_t, StateNdot_tot, Ctrl_tot, ContactForce_tot
@@ -103,7 +103,7 @@ for i = 1:Ctrl_No
     %% 4. Complementarity constraints: Contact Force!!!    
     lamda_Full_i = Contact_Force_Back2Full(lamda_i, Active_In);
 
-    Normal_Force = Normal_Force_Cal_fn(Node_i_child_Norm_Ang(1:end-2,:), lamda_Full_i);
+    [Normal_Force, Tang_Force] = Contact_Force_Cal_fn(Node_i_child_Norm_Ang(1:end-2,:), lamda_Full_i);
     c = [c; -Normal_Force];
     
     %% 5. Contact Constraint Maintenance: the previous contacts have to be maintained
@@ -118,6 +118,9 @@ for i = 1:Ctrl_No
     Node_i_Pos = reshape(Node_i_Pos',16,1);
     Node_i_child_Pos = reshape(Node_i_child_Pos',16,1);
     ceq = [ceq; Eqn_Maint_Matrix * (Node_i_Pos - Node_i_child_Pos)];
+    
+    %% 6. Friction cone constraints:
+    c = [c;  Tang_Force.*Tang_Force - mu * mu * Normal_Force.*Normal_Force];    
 end
 
 end

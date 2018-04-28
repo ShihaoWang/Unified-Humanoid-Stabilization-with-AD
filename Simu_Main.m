@@ -1,9 +1,10 @@
 function Simu_Main()
 % This is the main program to run the whole simulation
-global Tme_Seed Ctrl_No mini Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_Ind_Goal
+global Tme_Seed Ctrl_No mini mu Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_Ind_Goal 
 Tme_Seed = 2;       % The default time within each segment
 Ctrl_No = 15;       % Control grids within each segment
 mini = 0.05;        % An position offset
+mu = 0.5;
 
 %% First is to validate the initial condition
 [sigma0, x0] = Default_Init('show');
@@ -25,7 +26,7 @@ R = [{Node}];
 
 while isempty(R)==0
     [Node_i, R, Ind_i] = Frontier_Node_Pop(R);
-    [Flag_i, Var_Opt] = Node_Self_Opt(Node_i);
+    [Flag_i, Var_Opt, Var_Value] = Node_Self_Opt(Node_i);
     
     [Flag, Var_Opt] = Nodes_Connectivity_Opt();
 end

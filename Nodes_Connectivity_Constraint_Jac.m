@@ -19,6 +19,6 @@ else
     gx.dx = ones(541,1);
     [con, coneq] = Nodes_Connectivity_Constraint_ADiGatorJac(gx);
     c = con.f; ceq = coneq.f;
-    gradc = sparse(con.dx_location(:,2),con.dx_location(:,1),con.dx,541,210);
+    gradc = sparse(con.dx_location(:,2),con.dx_location(:,1),con.dx,541,300);
     gradceq = sparse(coneq.dx_location(:,2),coneq.dx_location(:,1),coneq.dx,541,461);
 end
