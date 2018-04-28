@@ -43,7 +43,7 @@ Flag = 0;
 %                           evaluations exceeded options.MaxFunctionEvaluations.
 %               -1:         Stopped by an output function or plot function.
 %               -2:         No feasible point was found.
-x_i_child = Node_i_child.robotstate;
+x_i_child = Node_i.robotstate;
 [x_i_child,~,exitflag,~]= fmincon(@Seed_Conf_Obj,x_i_child,[],[],[],[],RobotState_LowBd,RobotState_UppBd,@Seed_Conf_Constraint,Seed_Opt);
 
 if (exitflag==1)||(exitflag==2)

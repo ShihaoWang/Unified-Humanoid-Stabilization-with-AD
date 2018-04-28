@@ -4,7 +4,7 @@ global Ctrl_No mini Active_Ind_Init Active_Ind_Tran Active_Ind_Goal sigma_i sigm
 % This function optimizes the inertia shaping strategy within a certain mode
 
 % The main idea to minimize the kinetic energy
-[Flag, Opt_Seed, Opt_Lowbd, Opt_Uppbd] = Seed_Guess_Gene(Node);
+[Flag, Opt_Seed, Opt_Lowbd, Opt_Uppbd] = Seed_Guess_Gene(Node_i, Node_i_child);
 if Flag ==0
     return
 end 
@@ -22,12 +22,12 @@ else
     sigma_goal = sigma_i_child;    
 end
 
-% setup.order = 1;
-% setup.numvar = length(Opt_Seed);
-% setup.objective  = 'Nodes_Connectivity_Obj';
-% setup.constraint = 'Nodes_Connectivity_Constraint';
-% 
-% adifuncs = adigatorGenFiles4Fmincon(setup);
+setup.order = 2;
+setup.numvar = length(Opt_Seed);
+setup.objective  = 'Nodes_Connectivity_Obj';
+setup.constraint = 'Nodes_Connectivity_Constraint';
+
+adifuncs = adigatorGenFiles4Fmincon(setup);
 tic
 Nodes_Connectivity_Init_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','interior-point',...
     'MaxIterations',inf,'MaxFunctionEvaluations',inf,'StepTolerance',1e-4);

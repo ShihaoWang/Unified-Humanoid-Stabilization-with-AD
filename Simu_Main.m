@@ -26,14 +26,14 @@ R = [{Node}];
 
 while isempty(R)==0
     [Node_i, R, Ind_i] = Frontier_Node_Pop(R);
-    [Flag_i, Var_Opt, Var_Value] = Node_Self_Opt(Node_i);
-    if (Flag_i ==1)&&(Var_Value<=0.01)
-        break;
+%     [Flag_i, Var_Opt, Var_Value] = Node_Self_Opt(Node_i);
+%     if (Flag_i ==1)&&(Var_Value<=0.01)
+%         break;
+%     end
+    sigma_children_modes = Node_Expansion_Fn(Node_i);
+    for i = 1:length(sigma_children_modes)
+        Node_i_child.mode = sigma_children_modes(i,:);
+        [Flag, Var_Opt] = Nodes_Connectivity_Opt(Node_i, Node_i_child);        
     end
-    
-    [Flag, Var_Opt] = Nodes_Connectivity_Opt(Node_i);
 end
-
-sigma_children = Node_Expansion_Fn(Node0);
-
 end
