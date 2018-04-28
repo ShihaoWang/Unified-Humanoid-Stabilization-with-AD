@@ -1,5 +1,6 @@
-function Obj = Nodes_Connectivity_Obj(z,auxdata)
-Ctrl_No = auxdata.Ctrl_No;
+function Obj = Nodes_Connectivity_Obj(z)
+
+global Ctrl_No
 stateNdot_ref = z(2:1 + (26 + 10) * Ctrl_No);
 StateNdot_tot = stateNdot_ref(1:13 * 2 * Ctrl_No,:);
 StateNdot_tot = reshape(StateNdot_tot, 26, Ctrl_No);

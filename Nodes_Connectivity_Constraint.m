@@ -1,18 +1,5 @@
-function [c,ceq] = Nodes_Connectivity_Constraint(z, auxdata)
-
-% Auxdata unzip
-Ctrl_No = auxdata.Ctrl_No;
-mini = auxdata.mini;
-Node_i = auxdata.Node_i;
-Node_i_child = auxdata.Node_i_child;
-Active_Ind_Init = auxdata.Active_Ind_Init;
-Active_Ind_Tran = auxdata.Active_Ind_Tran;
-Active_Ind_Goal = auxdata.Active_Ind_Goal;
-sigma_i = auxdata.sigma_i;
-sigma_i_child = auxdata.sigma_i_child;
-sigma_tran = auxdata.sigma_tran;
-sigma_goal = auxdata.sigma_goal;
-
+function [c,ceq] = Nodes_Connectivity_Constraint(z)
+global Ctrl_No mini Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_Ind_Goal sigma_i sigma_i_child sigma_tran sigma_goal
 c = []; ceq = [];
 
 %% Optimization variables unzip: delta_t, StateNdot_tot, Ctrl_tot, ContactForce_tot
@@ -81,31 +68,38 @@ for i = 1:Ctrl_No
     
     %% 3. Complementarity constraints: Distance!!!---Node_i_child mode constraints
     [Node_i_child_Pos, Node_i_child_Vel] = End_Effector_Pos_Vel(stateNdot_i);
-    [Node_i_child_Pos_Dist, Node_i_child_Norm_Ang]= Obs_Dist_Fn(Node_i_child_Pos);
-    Node_i_child_Vel = reshape(Node_i_child_Vel',16,1);
-    
-    sigma_vec_sel = [0 1 0]';
-    
+    [Node_i_child_Pos_Dist, Node_i_child_Norm_Ang]= Obs_Dist_Fn(Node_i_child_Pos);   
+    sigma_vec_sel = [0 1 0]';   
     if i == 1
        sigma_vec_sel = [ 1 0 0]';       
-    end
-    
+    end    
     if i == Ctrl_No
         sigma_vec_sel = [ 0 0 1]';
+    end  
+    sigma_t = sigma_base * sigma_vec_sel;   
+    if sigma_t(1)==1
+        Not_Sigma_t_1 = 0;
+    else
+        Not_Sigma_t_1 = 1;
+    end 
+    if sigma_t(2)==1
+        Not_Sigma_t_2 = 0;
+    else
+        Not_Sigma_t_2 = 1;
     end
-    
-    sigma_t = sigma_base * sigma_vec_sel;
-   
-    Eqn_Pos_Matrix = blkdiag(sigma_t(1),sigma_t(1), sigma_t(2),sigma_t(2),sigma_t(3),sigma_t(4), 0, 0);
-    Eqn_Vel_Matrix = blkdiag(sigma_t(1),sigma_t(1),sigma_t(1),sigma_t(1),sigma_t(2),sigma_t(2),sigma_t(2),sigma_t(2),...
-                             sigma_t(3),sigma_t(3),sigma_t(4),sigma_t(4), 0, 0, 0, 0);
-    ceq = [ceq; Eqn_Pos_Matrix * Node_i_child_Pos_Dist];
-    ceq = [ceq; Eqn_Vel_Matrix * Node_i_child_Vel];
-    
-    Inq_Pos_Matrix = blkdiag(not(sigma_t(1)),not(sigma_t(1)), not(sigma_t(2)),not(sigma_t(2)),not(sigma_t(3)),not(sigma_t(4)), 0, 0);
-    
+    if sigma_t(3)==1
+        Not_Sigma_t_3 = 0;
+    else
+        Not_Sigma_t_3 = 1;     
+    end
+    if sigma_t(4)==1
+        Not_Sigma_t_4 = 0;
+    else
+        Not_Sigma_t_4 = 1;
+    end
+    Inq_Pos_Matrix = blkdiag(Not_Sigma_t_1,Not_Sigma_t_1, Not_Sigma_t_2,Not_Sigma_t_2,Not_Sigma_t_3,Not_Sigma_t_4, 0, 0);
     c = [c; - (Inq_Pos_Matrix * Node_i_child_Pos_Dist - Inq_Pos_Matrix * ones(8,1) * mini)];
-    
+
     %% 4. Complementarity constraints: Contact Force!!!    
     lamda_Full_i = Contact_Force_Back2Full(lamda_i, Active_In);
 
@@ -114,7 +108,6 @@ for i = 1:Ctrl_No
     
     %% 5. Contact Constraint Maintenance: the previous contacts have to be maintained
     Node_i_Pos = Node_i.End_Pos;
-    Node_i_Vel = Node_i.End_Vel;
     Eqn_Maint_Matrix = blkdiag(sigma_i(1) * sigma_i_child(1), sigma_i(1) * sigma_i_child(1),...
                                sigma_i(1) * sigma_i_child(1), sigma_i(1) * sigma_i_child(1),...
                                sigma_i(2) * sigma_i_child(2), sigma_i(2) * sigma_i_child(2),...
@@ -124,9 +117,7 @@ for i = 1:Ctrl_No
     
     Node_i_Pos = reshape(Node_i_Pos',16,1);
     Node_i_child_Pos = reshape(Node_i_child_Pos',16,1);
-    Node_i_Vel = reshape(Node_i_Vel',16,1);
     ceq = [ceq; Eqn_Maint_Matrix * (Node_i_Pos - Node_i_child_Pos)];
-    ceq = [ceq; Eqn_Maint_Matrix * (Node_i_Vel - Node_i_child_Vel)];
 end
 
 end

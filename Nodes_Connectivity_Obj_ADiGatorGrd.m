@@ -10,13 +10,13 @@
 % provided 'AS IS' with NO WARRANTIES OF ANY KIND and no merchantability
 % or fitness for any purpose or application.
 
-function Obj = Nodes_Connectivity_Obj_ADiGatorGrd(z,auxdata)
+function Obj = Nodes_Connectivity_Obj_ADiGatorGrd(z)
 global ADiGator_Nodes_Connectivity_Obj_ADiGatorGrd
 if isempty(ADiGator_Nodes_Connectivity_Obj_ADiGatorGrd); ADiGator_LoadData(); end
 Gator1Data = ADiGator_Nodes_Connectivity_Obj_ADiGatorGrd.Nodes_Connectivity_Obj_ADiGatorGrd.Gator1Data;
 % ADiGator Start Derivative Computations
-Ctrl_No = auxdata.Ctrl_No;
-%User Line: Ctrl_No = auxdata.Ctrl_No;
+global Ctrl_No 
+%User Line: global
 cada1f1 = 36*Ctrl_No;
 cada1f2 = 1 + cada1f1;
 cada1f3 = 2:cada1f2;

@@ -21,7 +21,7 @@ x0_init = [rIx rIy theta q1 q2 q3 q4 q5 q6 q7 q8 q9 q10,...
 Init_Opt = optimoptions(@fmincon,'Display','off','Algorithm','sqp','Maxiterations',inf,'MaxFunctionEvaluations',inf);
 [RobotState_LowBd, RobotState_UppBd, ~, ~] = Optimization_Bounds();
 
-Grad_Hess_Flag = 0;
+Grad_Hess_Flag = 1;
 
 if Grad_Hess_Flag == 1
     % --------------------- Call adigatorGenFiles4Fmincon ------------------- %

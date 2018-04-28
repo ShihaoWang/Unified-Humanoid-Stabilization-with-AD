@@ -10,14 +10,14 @@
 % provided 'AS IS' with NO WARRANTIES OF ANY KIND and no merchantability
 % or fitness for any purpose or application.
 
-function Obj = Nodes_Connectivity_Obj_ADiGatorHes(z,auxdata)
+function Obj = Nodes_Connectivity_Obj_ADiGatorHes(z)
 global ADiGator_Nodes_Connectivity_Obj_ADiGatorHes
 if isempty(ADiGator_Nodes_Connectivity_Obj_ADiGatorHes); ADiGator_LoadData(); end
 Gator1Data = ADiGator_Nodes_Connectivity_Obj_ADiGatorHes.Nodes_Connectivity_Obj_ADiGatorHes.Gator1Data;
 Gator2Data = ADiGator_Nodes_Connectivity_Obj_ADiGatorHes.Nodes_Connectivity_Obj_ADiGatorHes.Gator2Data;
 % ADiGator Start Derivative Computations
-Ctrl_No = auxdata.Ctrl_No;
-%User Line: Ctrl_No = auxdata.Ctrl_No;
+global Ctrl_No 
+%User Line: global
 cada1f1 = 36*Ctrl_No;
 cada1f2 = 1 + cada1f1;
 cada1f3 = 2:cada1f2;
