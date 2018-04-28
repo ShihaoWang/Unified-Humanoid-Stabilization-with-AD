@@ -29,7 +29,7 @@ end
 % adifuncs = adigatorGenFiles4Fmincon(setup);
 tic
 Nodes_Connectivity_Init_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','sqp',...
-    'MaxIterations',inf,'MaxFunctionEvaluations',inf,'UseParallel','always','StepTolerance',1e-4);
+    'MaxIterations',inf,'MaxFunctionEvaluations',inf,'StepTolerance',1e-4);
 
 
 [Var_Opt,fval,exitflag] = fmincon(@Nodes_Connectivity_Obj,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...

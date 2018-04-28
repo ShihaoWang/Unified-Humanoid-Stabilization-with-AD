@@ -14,7 +14,7 @@ sigma_base = [sigma_i' sigma_tran' sigma_goal'];
 
 stateNdot_vec = zeros(Ctrl_No,1);
 
-for i = 1:Ctrl_No
+parfor i = 1:Ctrl_No
     stateNdot_vec_temp = stateNdot_vec;    stateNdot_vec_temp(i) = 1;
     stateNdot_i = StateNdot_tot * stateNdot_vec_temp;      Ctrl_i = Ctrl_tot(:,i);                
     rIx_i = stateNdot_i(1);                rIy_i = stateNdot_i(2);                theta_i = stateNdot_i(3);
