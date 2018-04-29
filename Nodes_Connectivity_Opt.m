@@ -1,8 +1,8 @@
 function [Flag, Var_Opt] = Nodes_Connectivity_Opt(Node_i, Node_i_child)
 
-global Ctrl_No mini Active_Ind_Init Active_Ind_Tran Active_Ind_Goal sigma_i sigma_i_child sigma_tran sigma_goal
+global Ctrl_No mini Active_Ind_Init Active_Ind_Tran Active_Ind_Goal sigma_i sigma_i_child sigma_tran sigma_goal time_count
 % This function optimizes the inertia shaping strategy within a certain mode
-
+Flag = [];Var_Opt = [];
 % The main idea to minimize the kinetic energy
 [Flag, Opt_Seed, Opt_Lowbd, Opt_Uppbd] = Seed_Guess_Gene(Node_i, Node_i_child);
 if Flag ==0
@@ -22,31 +22,43 @@ else
     sigma_goal = sigma_i_child;    
 end
 
-% setup.order = 1;
-% setup.numvar = length(Opt_Seed);
-% setup.objective  = 'Nodes_Connectivity_Obj';
-% setup.constraint = 'Nodes_Connectivity_Constraint';
-% 
-% adifuncs = adigatorGenFiles4Fmincon(setup);
+time_count = clock;
 
 tic
 Nodes_Connectivity_Init_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','interior-point',...
-    'MaxIterations',25,'MaxFunctionEvaluations',inf,'StepTolerance',1e-4);
-
+    'MaxIterations',inf,'MaxFunctionEvaluations',inf,'OutputFcn','Time_Termination_fn');
 
 [Var_Opt,fval,exitflag] = fmincon(@Nodes_Connectivity_Obj,Opt_Seed,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
                   @Nodes_Connectivity_Constraint,Nodes_Connectivity_Init_Opt);
+if (exitflag==1)||(exitflag==2)
+    Flag =1;
+    return
+end
+              
+time_count = clock;
 
 Nodes_Connectivity_Fur_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','sqp',...
-    'MaxIterations',inf,'MaxFunctionEvaluations',inf,'StepTolerance',1e-4);
-
+    'MaxIterations',inf,'MaxFunctionEvaluations',inf,'OutputFcn','Time_Termination_Fur_fn');
 
 [Var_Opt,fval,exitflag] = fmincon(@Nodes_Connectivity_Obj,Var_Opt,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
                   @Nodes_Connectivity_Constraint,Nodes_Connectivity_Fur_Opt); 
 Flag = 0;              
 if (exitflag==1)||(exitflag==2)
     Flag =1;
-    Var_Value = fval;
+    return
+else
+    if exitflag ==-1
+        time_count = clock;
+
+        [Var_Opt,fval,exitflag] = fmincon(@Nodes_Connectivity_Obj,Var_Opt,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
+            @Nodes_Connectivity_Constraint,Nodes_Connectivity_Init_Opt);
+        if (exitflag==1)||(exitflag==2)
+            Flag =1;
+            return
+        else
+            Flag = 0;
+        end
+    end
 end
 toc
 

@@ -1,4 +1,4 @@
-function [Node_i, R, Ind]= Frontier_Node_Pop(R)
+function [Node_i, R]= Frontier_Node_Pop(R)
 
 % This function is used to pop the node out whose kinetic energy is the
 % minimum from all the other nodes in the current Frontier

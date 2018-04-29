@@ -19,10 +19,9 @@ Eqn_Pos_Matrix = blkdiag(sigma_i_child(1),sigma_i_child(1), sigma_i_child(2),sig
                     
 Eqn_Vel_Matrix = blkdiag(sigma_i_child(1),sigma_i_child(1),sigma_i_child(1),sigma_i_child(1),...
                          sigma_i_child(2),sigma_i_child(2),sigma_i_child(2),sigma_i_child(2),...
-                         sigma_i_child(3),sigma_i_child(3),sigma_i_child(4),sigma_i_child(4),0,0,0,0);
+                         sigma_i_child(3),sigma_i_child(3),sigma_i_child(4),sigma_i_child(4),0,0,0,0);                   
 ceq = [ceq; Eqn_Pos_Matrix * Node_i_child_Pos_Dist];
 ceq = [ceq; Eqn_Vel_Matrix * Node_i_child_Vel];
-
 
 Inq_Pos_Matrix = blkdiag(not(sigma_i_child(1)),not(sigma_i_child(1)), not(sigma_i_child(2)),not(sigma_i_child(2)),...
                          not(sigma_i_child(3)),not(sigma_i_child(4)),0,0);

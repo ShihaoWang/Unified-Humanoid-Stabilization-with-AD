@@ -33,7 +33,7 @@ end
 [RobotState_LowBd, RobotState_UppBd, Ctrl_LowBd, Ctrl_UppBd] = Optimization_Bounds();
 Seed_Opt = optimoptions(@fmincon,'Display','off','Algorithm','sqp','MaxIterations',inf,'OptimalityTolerance',1e-8,'MaxFunctionEvaluations',inf);
 
-Flag = 0;
+Flag = 0; Opt_Seed = []; Opt_Lowbd = []; Opt_Uppbd= [];
 % Here an iterative optimization idea is adopted to minimize the difference
 % between the new optimized translation to the initial translation position
 

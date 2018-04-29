@@ -97,8 +97,20 @@ for i = 1:Ctrl_No
     else
         Not_Sigma_t_4 = 1;
     end
-    Inq_Pos_Matrix = blkdiag(Not_Sigma_t_1,Not_Sigma_t_1, Not_Sigma_t_2,Not_Sigma_t_2,Not_Sigma_t_3,Not_Sigma_t_4, 0, 0);
+    Inq_Pos_Matrix = zeros(8,8);
+    Inq_Pos_Matrix(1,1) = Not_Sigma_t_1;        Inq_Pos_Matrix(2,2) = Not_Sigma_t_1; 
+    Inq_Pos_Matrix(3,3) = Not_Sigma_t_2;        Inq_Pos_Matrix(4,4) = Not_Sigma_t_2; 
+    Inq_Pos_Matrix(5,5) = Not_Sigma_t_3;        Inq_Pos_Matrix(6,6) = Not_Sigma_t_4; 
+
     c = [c; - (Inq_Pos_Matrix * Node_i_child_Pos_Dist - Inq_Pos_Matrix * ones(8,1) * mini)];
+    
+    if i == Ctrl_No
+        End_Eq_Pos_Matrix = zeros(8,8);
+        End_Eq_Pos_Matrix(1,1) = sigma_t(1);        End_Eq_Pos_Matrix(2,2) = sigma_t(1);
+        End_Eq_Pos_Matrix(3,3) = sigma_t(2);        End_Eq_Pos_Matrix(4,4) = sigma_t(2);
+        End_Eq_Pos_Matrix(5,5) = sigma_t(3);        End_Eq_Pos_Matrix(6,6) = sigma_t(4);   
+        ceq = [ceq; End_Eq_Pos_Matrix * Node_i_child_Pos_Dist];     
+    end
 
     %% 4. Complementarity constraints: Contact Force!!!    
     lamda_Full_i = Contact_Force_Back2Full(lamda_i, Active_In);
@@ -108,23 +120,32 @@ for i = 1:Ctrl_No
     
     %% 5. Contact Constraint Maintenance: the previous contacts have to be maintained
     Node_i_Pos = Node_i.End_Pos;
-    Eqn_Maint_Matrix = blkdiag(sigma_i(1) * sigma_i_child(1), sigma_i(1) * sigma_i_child(1),...
-                               sigma_i(1) * sigma_i_child(1), sigma_i(1) * sigma_i_child(1),...
-                               sigma_i(2) * sigma_i_child(2), sigma_i(2) * sigma_i_child(2),...
-                               sigma_i(2) * sigma_i_child(2), sigma_i(2) * sigma_i_child(2),...
-                               sigma_i(3) * sigma_i_child(3), sigma_i(3) * sigma_i_child(3),...
-                               sigma_i(4) * sigma_i_child(4), sigma_i(4) * sigma_i_child(4),0,0,0,0);
-    
+    Eqn_Maint_Matrix = zeros(16,16);
+    Eqn_Maint_Matrix(1,1) = sigma_i(1) * sigma_i_child(1);          Eqn_Maint_Matrix(2,2) = sigma_i(1) * sigma_i_child(1);
+    Eqn_Maint_Matrix(3,3) = sigma_i(1) * sigma_i_child(1);          Eqn_Maint_Matrix(4,4) = sigma_i(1) * sigma_i_child(1);
+    Eqn_Maint_Matrix(5,5) = sigma_i(2) * sigma_i_child(2);          Eqn_Maint_Matrix(6,6) = sigma_i(2) * sigma_i_child(2);
+    Eqn_Maint_Matrix(7,7) = sigma_i(2) * sigma_i_child(2);          Eqn_Maint_Matrix(8,8) = sigma_i(2) * sigma_i_child(2);
+    Eqn_Maint_Matrix(9,9) = sigma_i(3) * sigma_i_child(3);          Eqn_Maint_Matrix(10,10) = sigma_i(3) * sigma_i_child(3);
+    Eqn_Maint_Matrix(11,11) = sigma_i(4) * sigma_i_child(4);        Eqn_Maint_Matrix(12,12) = sigma_i(4) * sigma_i_child(4);
+
     Node_i_Pos = reshape(Node_i_Pos',16,1);
     Node_i_child_Pos = reshape(Node_i_child_Pos',16,1);
     ceq = [ceq; Eqn_Maint_Matrix * (Node_i_Pos - Node_i_child_Pos)];
     
     %% 6. Friction cone constraints:
-    c_FC = zeros(length(Tang_Force),1);
-    for mm =1:length(Tang_Force)
-        c_FC(mm) = Tang_Force(mm) * Tang_Force(mm) - mu * mu * Normal_Force(mm) * Normal_Force(mm);        
-    end
-    c = [c;  c_FC];    
+    Tang_Force_1 = Tang_Force(1) + Tang_Force(2);
+    Norm_Force_1 = Normal_Force(1) + Normal_Force(2);
+    Tang_Force_2 = Tang_Force(3) + Tang_Force(4);
+    Norm_Force_2 = Normal_Force(3) + Normal_Force(4);
+    Tang_Force_3 = Tang_Force(5);
+    Norm_Force_3 = Normal_Force(5);
+    Tang_Force_4 = Tang_Force(6);
+    Norm_Force_4 = Normal_Force(6);
+    
+    c = [c;  Tang_Force_1 * Tang_Force_1 - mu * mu * Norm_Force_1 * Norm_Force_1];    
+    c = [c;  Tang_Force_2 * Tang_Force_2 - mu * mu * Norm_Force_2 * Norm_Force_2];    
+    c = [c;  Tang_Force_3 * Tang_Force_3 - mu * mu * Norm_Force_3 * Norm_Force_3];    
+    c = [c;  Tang_Force_4 * Tang_Force_4 - mu * mu * Norm_Force_4 * Norm_Force_4];    
 end
 
 end
