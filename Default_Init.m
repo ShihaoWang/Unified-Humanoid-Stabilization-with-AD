@@ -3,13 +3,13 @@ function [sigma0, x0] = Default_Init(varargin)
 % This function is used to given a default initialization state
 global sigma0
 sigma0 = [ 1 0 0 0 ]; 
-rIx = 0;            rIy = 1;            theta = -0.09;
-q1 = 0.45;          q2 = 0.06;          q3 = 0.15;
+rIx = 0;            rIy = 1;            theta = 0.15;
+q1 = -0.5;          q2 = 0.06;          q3 = 0.15;
 % q4 = -0.6;
-q4 = -1;            q5 = 0.15;          q6 = 0.27;
+q4 = 0.5;            q5 = 0.15;          q6 = 0.27;
 q7 = -0.66;         q8 = -0.6251;       q9 = 0.69;          q10 = -0.2951;
 
-rIxdot = 0.2;       rIydot = 0.1;       thetadot = -0.21;
+rIxdot = 0.5;       rIydot = 0.1;       thetadot = -2.21;
 q1dot = 0.733;      q2dot = 1.5;        q3dot = 0.733;
 q4dot = -1.5;       q5dot = 2;          q6dot = -1.3;
 q7dot = 0.5;          q8dot = -2;         q9dot = -pi/2;      q10dot = -1.5;

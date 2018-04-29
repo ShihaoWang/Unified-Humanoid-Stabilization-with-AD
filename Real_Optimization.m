@@ -28,9 +28,8 @@ if (exitflag==1)||(exitflag==2)
     return
 else
     if exitflag ==-1
-        time_count = clock;
-
         if (output.constrviolation<1)
+            time_count = clock;            
             [Var_Opt, fval, exitflag, output] = fmincon(@Nodes_Connectivity_Obj,Var_Opt,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
                 @Nodes_Connectivity_Constraint,Nodes_Connectivity_Init_Opt);
             if (exitflag==1)||(exitflag==2)||(output.constrviolation<0.1)
@@ -40,6 +39,7 @@ else
                 Flag = 0;
             end
         else
+            time_count = clock;
             [Var_Opt,fval,exitflag,output] = fmincon(@Nodes_Connectivity_Obj,Var_Opt,[],[],[],[],Opt_Lowbd,Opt_Uppbd,...
                 @Nodes_Connectivity_Constraint,Nodes_Connectivity_Fur_Opt);
             if (exitflag==1)||(exitflag==2)||(output.constrviolation<0.1)

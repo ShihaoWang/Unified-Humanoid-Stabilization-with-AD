@@ -22,6 +22,7 @@ else
 end
 
 
-[Flag, Var_Opt, fval] = Real_Optimization(Opt_Seed, Opt_Lowbd, Opt_Uppbd);
+[Flag, Var_Opt, ~] = Real_Optimization(Opt_Seed, Opt_Lowbd, Opt_Uppbd);
+fval = Kinetic_Energy_Cal_End(Var_Opt);
 
 end

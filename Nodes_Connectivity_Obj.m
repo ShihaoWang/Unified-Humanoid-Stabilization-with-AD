@@ -20,7 +20,7 @@ q7dot = x_i(10+13);          q8dot = x_i(11+13);          q9dot = x_i(12+13);
 q10dot = x_i(13+13);
 T = T_fn(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,q10dot,q1dot,q2dot,q3dot,q4dot,q5dot,q6dot,q7dot,q8dot,q9dot,rIxdot,rIydot,thetadot,theta);
 Obj = T;
-if T<0.05
-    Obj = 0.05;
+if T<0.01
+    Obj = 0.01;
 end
 end
