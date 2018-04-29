@@ -3,6 +3,7 @@ global Ctrl_No mini Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_I
 
 tic
 time_count = clock;
+fval = [];
 Nodes_Connectivity_Init_Opt = optimoptions(@fmincon,'Display','iter','Algorithm','interior-point',...
     'MaxIterations',inf,'MaxFunctionEvaluations',inf,'OutputFcn','Time_Termination_fn');
 
