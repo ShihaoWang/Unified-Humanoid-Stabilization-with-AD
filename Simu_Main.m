@@ -25,8 +25,14 @@ while isempty(R)==0
     [Node_i, R] = Frontier_Node_Pop(R);
     [Flag_i, Var_Opt, Var_Value] = Node_Self_Opt(Node_i);
     if (Flag_i ==1)&&(Var_Value<=0.01)
-        Node.Self_StateNControl = Var_Opt;
+        Node_i.Self_StateNControl = Var_Opt;
         break;
+    end
+    if Flag_i == 1
+        % This means that the robot's kinetic energy is not reduced to 0
+        % but the value is small
+        Node_i.Self_StateNControl = Var_Opt;
+        Node_i.robotstate = Edge_State_Distill(Var_Opt);
     end
     sigma_children_modes = Node_Expansion_Fn(Node_i);
     for i = 1:length(sigma_children_modes)

@@ -21,7 +21,7 @@ else
     sigma_tran = sigma_i_child;
     sigma_goal = sigma_i_child;    
 end
-[Flag, Var_Opt, ~] = Real_Optimization(Opt_Seed, Opt_Lowbd, Opt_Uppbd);
+[Flag, Var_Opt, ~] = Real_Optimization(Opt_Seed, Opt_Lowbd, Opt_Uppbd,0);
 if Impact_Mapping_Flag==1
     % This is case there is impact mapping to be included in our discussion
     Previous_End_State = Edge_State_Distill(Var_Opt);   
