@@ -42,7 +42,10 @@ for i = 1:Ctrl_No
         x_statep1 = StateNdot_tot(1:13,i+1);
     end
     
+    ceq = [ceq; xstatedot_i - (x_statep1 - xstate_i)/delta_t];
+    
     qddot = (x_statep1 - xstate_i - xstatedot_i * delta_t)/(1/2 * delta_t^2) ; 
+    
     D_q = D_q_fn(q1_i,q2_i,q3_i,q4_i,q5_i,q6_i,q7_i,q8_i,q9_i,q10_i,theta_i);
     B_q = B_q_fn(1);
     C_q_qdot = C_q_qdot_fn(q1_i,q2_i,q3_i,q4_i,q5_i,q6_i,q7_i,q8_i,q9_i,q10_i,...

@@ -29,6 +29,28 @@ Jac_Act = Jac_Full(Active_Ind,:);
 
 Impulse_Active = -(Jac_Act * (D_q\Jac_Act'))\(Jac_Act * xstatedot);
 
+% Here to make sure that the constraint force is valid we would like to add
+% some correction from the null space of the Jacobian
+Temp_Impulse = Contact_Force_Back2Full(Impulse_Active, Active_Ind);
+
+
+[m,n] = size(null(Jac_Act));
+
+Null_Jac = null(Jac_Act);
+sth.Null_Jac = Null_Jac;
+sth.Temp_Impulse = Temp_Impulse;
+sth.Active_Ind = Active_Ind;
+sth.robotstate = Pre_Impact_State;
+
+Impact_Mapping_Opt = optimoptions(@fmincon,'Display','off','Algorithm','interior-point',...
+    'MaxIterations',inf,'MaxFunctionEvaluations',inf);
+
+x = fmincon(@Impact_Mapping_Obj, zeros(n,1), [],[],[],[],[],[],@Impact_Mapping_Constraint, Impact_Mapping_Opt,sth);
+
+lamda_Full_i = Temp_Impulse + Contact_Force_Back2Full(Null_Jac * x,Active_Ind);
+
+lamda_Full_i = Temp_Impulse;
+
 Post_Impact_State = xstatedot + D_q\(Jac_Act' * Impulse_Active);
 
 Post_Impact_State = [xstate; Post_Impact_State];
@@ -36,10 +58,10 @@ Post_Impact_State = [xstate; Post_Impact_State];
 Post_Impact_KE = Kinetic_Energy_Cal(Post_Impact_State);
 
 if Pre_Impact_KE>=Post_Impact_KE
-    Impulse = Contact_Force_Back2Full(Impulse_Active, Active_Ind);
+    Impulse = lamda_Full_i;
 else
     Post_Impact_State = Pre_Impact_State;
-    Impulse = 0*Contact_Force_Back2Full(Impulse_Active, Active_Ind);
+    Impulse = 0*lamda_Full_i;
 end
 end
 
