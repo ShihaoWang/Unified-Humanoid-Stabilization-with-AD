@@ -186,6 +186,10 @@ V = simplify(V);
 matlabFunction(T,'File','T_fn');
 matlabFunction(V,'File','V_fn');
 
+Tdot = simplify(jacobian(T, q) * qdot);
+matlabFunction(Tdot,'File','Tdot_fn');
+
+
 Q.T = T;
 Q.V = V; 
 

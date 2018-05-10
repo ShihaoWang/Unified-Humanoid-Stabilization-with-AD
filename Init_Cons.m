@@ -4,6 +4,7 @@ global sigma0 mini mu
 
 c = []; ceq = [];
 
+% z0(3) = 0;
 %% 1. Distance constraint
 [End_Pos, End_Vel]= End_Effector_Pos_Vel(z0);
 

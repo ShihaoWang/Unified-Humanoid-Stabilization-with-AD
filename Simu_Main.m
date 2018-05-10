@@ -1,14 +1,68 @@
 function Simu_Main()
 % This is the main program to run the whole simulation
-global Tme_Seed Ctrl_No mini mu Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_Ind_Goal time_count
-Tme_Seed = 2;       % The default time within each segment
-Ctrl_No = 20;       % Control grids within each segment
+global Tme_Seed Ctrl_No mini mu Node_i Node_i_child Active_Ind_Tran Active_Ind_Goal time_count
+Tme_Seed = 0.5;       % The default time within each segment
+Ctrl_No = 15;       % Control grids within each segment
 mini = 0.05;        % An position offset
 mu = 0.5;
 
 %% First is to validate the initial condition
 [sigma0, x0] = Default_Init('show');
 % [sigma0, x0] = Default_Init();
+
+% x0 = [    1.2043;
+%           0.6687;
+%            -0.0289;
+%     0.1945;
+%     0.5362;
+%    -0.7018;
+%    -0.6740;
+%     0.5191;
+%     0.1939;
+%    -0.1481;
+%          0;
+%     1.0470;
+%    -0.0534;
+%     0.5440;
+%    -0.0851;
+%     0.4058;
+%     1.9368;
+%    -3.0000;
+%     0.6574;
+%     1.5494;
+%    -3.0000;
+%     2.5598;
+%     0.0750;
+%     0.5899;
+%     1.1762;
+%    -2.0424];
+% 
+% x0 = [    4.3705;
+%     0.7239;
+%    -0.0084;
+%     0.5884;
+%     0.4474;
+%     0.0084;
+%    -0.3018;
+%     0.5659;
+%    -0.2557;
+%    -0.9133;
+%    -0.9085;
+%     1.0310;
+%    -0.3019;
+%     0.4844;
+%    -0.0049;
+%    -0.9953;
+%     2.1449;
+%    -1.7763;
+%    -1.9199;
+%     1.6713;
+%     0.1990;
+%    -0.8751;
+%     0.6740;
+%     0.4466;
+%    -0.3926;
+%     2.5565];
 
 % Root node initialization
 Node.Par_Node = [];

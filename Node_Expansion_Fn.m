@@ -31,33 +31,33 @@ foot_CD_contas = sigma_i(2);
 hand_E_contas = sigma_i(3);
 hand_F_contas = sigma_i(4);
 
-% %% 1. Hand contact expansion
-% if (hand_E_contas == 0)&&(hand_F_contas == 0)
-%     %% A. No contact case  
-%     % In this case, there assumes to be a hand collision
-%     sigma_i_child = sigma_modi(sigma_i, 3, 1);
-%     sigma_children = [sigma_children; sigma_i_child];
-%     sigma_i_child = sigma_modi(sigma_i, 4, 1);
-%     sigma_children = [sigma_children; sigma_i_child];
-%     
-% else
-%     %% B. Two hand contact case
-%     if (hand_E_contas == 1)&&(hand_F_contas == 1)
-%         sigma_i_child = sigma_modi(sigma_i, 3, 0);
-%         sigma_children = [sigma_children; sigma_i_child];
-%         sigma_i_child = sigma_modi(sigma_i, 4, 0);
-%         sigma_children = [sigma_children; sigma_i_child];
-%     else
-%         %% C. One hand contact case
-%         sigma_i_child = sigma_modi(sigma_i, 3, 0);
-%         sigma_i_child = sigma_modi(sigma_i_child, 4, 0);
-%         sigma_children = [sigma_children; sigma_i_child];
-%         
-%         sigma_i_child = sigma_modi(sigma_i, 3, 1);
-%         sigma_i_child = sigma_modi(sigma_i_child, 4, 1);
-%         sigma_children = [sigma_children; sigma_i_child];              
-%     end
-% end
+%% 1. Hand contact expansion
+if (hand_E_contas == 0)&&(hand_F_contas == 0)
+    %% A. No contact case  
+    % In this case, there assumes to be a hand collision
+    sigma_i_child = sigma_modi(sigma_i, 3, 1);
+    sigma_children = [sigma_children; sigma_i_child];
+    sigma_i_child = sigma_modi(sigma_i, 4, 1);
+    sigma_children = [sigma_children; sigma_i_child];
+    
+else
+    %% B. Two hand contact case
+    if (hand_E_contas == 1)&&(hand_F_contas == 1)
+        sigma_i_child = sigma_modi(sigma_i, 3, 0);
+        sigma_children = [sigma_children; sigma_i_child];
+        sigma_i_child = sigma_modi(sigma_i, 4, 0);
+        sigma_children = [sigma_children; sigma_i_child];
+    else
+        %% C. One hand contact case
+        sigma_i_child = sigma_modi(sigma_i, 3, 0);
+        sigma_i_child = sigma_modi(sigma_i_child, 4, 0);
+        sigma_children = [sigma_children; sigma_i_child];
+        
+        sigma_i_child = sigma_modi(sigma_i, 3, 1);
+        sigma_i_child = sigma_modi(sigma_i_child, 4, 1);
+        sigma_children = [sigma_children; sigma_i_child];              
+    end
+end
 
 %% 2. Foot contact expansion
 if (foot_AB_contas == 0)&&(foot_CD_contas == 0)
@@ -77,8 +77,8 @@ else
         %% 3. One foot contact case
         [~,Active_Ind] = max(sigma_i(1,1:2));
         [~,Inactive_Ind] = min(sigma_i(1,1:2));
-        sigma_i_child = sigma_modi(sigma_i, Active_Ind, 0);
-        sigma_children = [sigma_children; sigma_i_child];
+%         sigma_i_child = sigma_modi(sigma_i, Active_Ind, 0);
+%         sigma_children = [sigma_children; sigma_i_child];
         sigma_i_child = sigma_modi(sigma_i, Inactive_Ind, 1);
         sigma_children = [sigma_children; sigma_i_child];
     end

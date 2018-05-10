@@ -1,5 +1,5 @@
 function [Flag, Var_Opt, fval] = Node_Self_Opt(Node)
-global Ctrl_No mini Node_i Node_i_child Active_Ind_Init Active_Ind_Tran Active_Ind_Goal sigma_i sigma_i_child sigma_tran sigma_goal time_count
+global Ctrl_No mini Node_i Node_i_child Active_Ind_Tran Active_Ind_Goal sigma_i sigma_i_child sigma_tran sigma_goal time_count
 % This function optimizes the inertia shaping strategy within a certain mode
 
 Flag = []; Var_Opt = []; fval = [];
