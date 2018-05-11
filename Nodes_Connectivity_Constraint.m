@@ -46,6 +46,7 @@ for i = 1:Ctrl_No-1
     
     qddot = (x0p1_statedot - x0_statedot)/delta_t ;
     
+    ceq = [ceq; qddot];
     D_q = D_q_fn(q1p1,q2p1,q3p1,q4p1,q5p1,q6p1,q7p1,q8p1,q9p1,q10p1,thetap1);
     B_q = B_q_fn();
     C_q_qdot = C_q_qdot_fn(q1p1,q2p1,q3p1,q4p1,q5p1,q6p1,q7p1,q8p1,q9p1,q10p1,q10dotp1,q1dotp1,q2dotp1,q3dotp1,q4dotp1,q5dotp1,q6dotp1,q7dotp1,q8dotp1,q9dotp1,thetadotp1,thetap1);    

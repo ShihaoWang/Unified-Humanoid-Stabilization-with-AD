@@ -2,9 +2,11 @@ function Simu_Main()
 % This is the main program to run the whole simulation
 global Tme_Seed Ctrl_No mini mu Node_i Node_i_child Active_Ind_Tran Active_Ind_Goal time_count
 Tme_Seed = 0.5;       % The default time within each segment
-Ctrl_No = 15;       % Control grids within each segment
+Ctrl_No = 10;       % Control grids within each segment
 mini = 0.05;        % An position offset
 mu = 0.5;
+
+Quasi_Static_Veri()
 
 %% First is to validate the initial condition
 [sigma0, x0] = Default_Init('show');
